@@ -5,7 +5,7 @@ VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibreLancer.Base", "LibreLancer.Base\LibreLancer.Base.csproj", "{CD2ACFD6-0360-4C12-A58A-A93307878AA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibreLancer.Data", "LibreLancer.Data\LibreLancer.Data.csproj", "{3627604A-B7C8-4251-A25A-C503311E9E04}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lizerium.Librelancer.DataBridge", "LibreLancer.Data\Lizerium.Librelancer.DataBridge.csproj", "{3627604A-B7C8-4251-A25A-C503311E9E04}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibreLancer.Data.Generator", "LibreLancer.Data.Generator\LibreLancer.Data.Generator.csproj", "{6FBD44F1-64AB-4D67-BA8A-2D50F498F2A7}"
 EndProject

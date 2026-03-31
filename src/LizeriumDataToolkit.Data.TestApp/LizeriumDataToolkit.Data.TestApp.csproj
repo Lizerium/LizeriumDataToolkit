@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LibreLancer.Data\LibreLancer.Data.csproj" />
+    <ProjectReference Include="..\LibreLancer.Data\Lizerium.Librelancer.DataBridge.csproj" />
   </ItemGroup>
 
 </Project>

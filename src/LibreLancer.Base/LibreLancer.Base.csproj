@@ -3,8 +3,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Version>0.0.1</Version>
     <Title>Librelancer Base Library</Title>
-    <Authors>Librelancer contributors</Authors>
-    <Copyright>Copyright (c) Callum McGing, Librelancer Contributors 2013-2025</Copyright>
+    <Authors>Librelancer contributors and Dvurechensky</Authors>
+    <Copyright>Copyright (c) Callum McGing, Librelancer Contributors 2013-2025 and Dvurechensky 2026</Copyright>
     <PackageProjectUrl>https://librelancer.net/</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/Librelancer/Librelancer/blob/main/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/Librelancer/Librelancer</RepositoryUrl>

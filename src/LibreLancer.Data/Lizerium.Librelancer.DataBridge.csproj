@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Version>1.0.0</Version>
+    <Title>Lizerium Freelancer Data</Title>
+    <Authors>Librelancer contributors, Lizerium and Dvurechensky</Authors>
+    <Copyright>Copyright (c) LibreLancer Contributors and Nikolay Dvurechensky</Copyright>
+    <PackageProjectUrl>https://github.com/Lizerium/LizeriumDataToolkit</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Lizerium/LizeriumDataToolkit/blob/main/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/Lizerium/LizeriumDataToolkit</RepositoryUrl>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <NoWarn>1701;1702;0649</NoWarn>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <NoWarn>1701;1702;0649</NoWarn>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>obj\Generated</CompilerGeneratedFilesOutputPath>
+    <Description>Freelancer game data reader and toolkit based on LibreLancer.</Description>
+    <PackageTags>Freelancer;GameData;Modding;Lizerium;LibreLancer</PackageTags>
+    <PackageIcon>LOGO_400x400.png</PackageIcon>
+    <PackageReadmeFile>nuget.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Properties\**" />
+    <EmbeddedResource Remove="Properties\**" />
+    <None Remove="Properties\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LibreLancer.Base\LibreLancer.Base.csproj" />
+    <ProjectReference Include="..\LibreLancer.Data.Generator\LibreLancer.Data.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Storyline\Storyline.default.ini" />
+    <EmbeddedResource Include="Storyline\Storyline.default.ini">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\docs\nuget.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\media\LOGO_400x400.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

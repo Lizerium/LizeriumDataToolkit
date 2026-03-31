@@ -70,7 +70,7 @@
 
 Собери проект и подключи:
 
-- `LibreLancer.Data.dll`
+- `Lizerium.Librelancer.DataBridge.dll`
 - `LibreLancer.Base.dll`
 
 (Готовые сборки доступны в разделе `Releases`)
