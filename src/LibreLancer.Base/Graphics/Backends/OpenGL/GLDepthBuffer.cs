@@ -4,20 +4,21 @@
 
 using System;
 
-namespace LibreLancer.Graphics.Backends.OpenGL;
-
-internal class GLDepthBuffer : IDepthBuffer
+namespace LibreLancer.Graphics.Backends.OpenGL
 {
-    internal uint ID;
+    class GLDepthBuffer : IDepthBuffer
+    {
+        internal uint ID;
 
-    public GLDepthBuffer(int width, int height)
-    {
-        ID = GL.GenRenderbuffer();
-        GL.BindRenderbuffer(GL.GL_RENDERBUFFER, ID);
-        GL.RenderbufferStorage(GL.GL_RENDERBUFFER, GL.GL_DEPTH_COMPONENT24, width, height);
-    }
-    public void Dispose()
-    {
-        GL.DeleteRenderbuffer(ID);
+        public GLDepthBuffer(int width, int height)
+        {
+            ID = GL.GenRenderbuffer();
+            GL.BindRenderbuffer(GL.GL_RENDERBUFFER, ID);
+            GL.RenderbufferStorage(GL.GL_RENDERBUFFER, GL.GL_DEPTH_COMPONENT24, width, height);
+        }
+        public void Dispose()
+        {
+            GL.DeleteRenderbuffer(ID);
+        }
     }
 }

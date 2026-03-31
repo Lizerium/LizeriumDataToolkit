@@ -2,9 +2,10 @@
 // This file is subject to the terms and conditions defined in
 // LICENSE, which is part of this source code package
 
-namespace LibreLancer.Data.Ini;
-
-public interface IEntryHandler
+namespace LibreLancer.Data.Ini
 {
-    bool HandleEntry(Entry e);
+    public interface IEntryHandler
+    {
+        bool HandleEntry(Entry e);
+    }
 }

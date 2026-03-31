@@ -6,93 +6,92 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace LibreLancer.Data.Ini;
-
-public class BinaryIniParser : IIniParser
+namespace LibreLancer.Data.Ini
 {
-    private const string BINI = "BINI";
-    private const int Version = 1;
-
-    public bool CanParse(Stream stream)
+    public class BinaryIniParser : IIniParser
     {
-        var buffer = new byte[4];
-        _ = stream.Read(buffer, 0, 4);
-        stream.Seek(0, SeekOrigin.Begin);
-        return Encoding.ASCII.GetString(buffer) == BINI;
-    }
+        private const string BINI = "BINI";
+        private const int Version = 1;
 
-    public IEnumerable<Section> ParseIniFile(string? path,
-        Stream stream,
-        bool preparse = true,
-        bool allowmaps = false,
-        IniStringPool? stringPool = null)
-    {
-        var reader = new BinaryReader(stream);
-
-        // Read Magic
-        reader.ReadInt32();
-
-        var formatVersion = reader.ReadInt32();
-        if (formatVersion != Version)
+        public bool CanParse(Stream stream)
         {
-            throw new FileVersionException(path, BINI, formatVersion, Version);
+            var buffer = new byte[4];
+            stream.Read(buffer, 0, 4);
+            stream.Seek(0, SeekOrigin.Begin);
+            return Encoding.ASCII.GetString(buffer) == BINI;
         }
 
-        var stringBlockOffset = reader.ReadInt32();
-        if (stringBlockOffset > reader.BaseStream.Length)
+        public IEnumerable<Section> ParseIniFile(string path,
+            Stream stream,
+            bool preparse = true,
+            bool allowmaps = false)
         {
-            throw new FileContentException(path, BINI, "The string block offset was out of range: " + stringBlockOffset);
-        }
+            var reader = new BinaryReader(stream);
 
-        var sectionBlockOffset = reader.BaseStream.Position;
+            // Read Magic
+            reader.ReadInt32();
 
-        reader.BaseStream.Seek(stringBlockOffset, SeekOrigin.Begin);
-        var stringBuffer = new byte[reader.BaseStream.Length - stringBlockOffset];
-        _ = reader.Read(stringBuffer, 0, stringBuffer.Length);
-        var stringBlock = new BiniStringBlock(Encoding.ASCII.GetString(stringBuffer), stringPool);
+            int formatVersion = reader.ReadInt32();
+            if (formatVersion != Version)
+                throw new FileVersionException(path, BINI, formatVersion, Version);
 
-        reader.BaseStream.Seek(sectionBlockOffset, SeekOrigin.Begin);
-        while (reader.BaseStream.Position < stringBlockOffset)
-        {
-            var sectionNameOffset = reader.ReadInt16();
-            var sectionName = stringBlock.Get(sectionNameOffset);
+            int stringBlockOffset = reader.ReadInt32();
+            if (stringBlockOffset > reader.BaseStream.Length)
+                throw new FileContentException(path,
+                    BINI, "The string block offset was out of range: " + stringBlockOffset);
 
-            var entryCount = reader.ReadInt16();
-            var section = new Section(sectionName, entryCount) { File = path };
+            long sectionBlockOffset = reader.BaseStream.Position;
 
-            for (var i = 0; i < entryCount; i++)
+            reader.BaseStream.Seek(stringBlockOffset, SeekOrigin.Begin);
+            var stringBuffer = new byte[reader.BaseStream.Length - stringBlockOffset];
+            reader.Read(stringBuffer, 0, stringBuffer.Length);
+            var stringBlock = new BiniStringBlock(Encoding.ASCII.GetString(stringBuffer));
+
+            reader.BaseStream.Seek(sectionBlockOffset, SeekOrigin.Begin);
+            while (reader.BaseStream.Position < stringBlockOffset)
             {
-                var entryNameOffset = reader.ReadInt16();
-                var entryName = stringBlock.Get(entryNameOffset);
+                short sectionNameOffset = reader.ReadInt16();
+                var sectionName = stringBlock.Get(sectionNameOffset);
 
-                var valueCount = reader.ReadByte();
-                var entry = new Entry(section, entryName, valueCount);
+                var section = new Section(sectionName) { File = path };
 
-                for (var j = 0; j < valueCount; j++)
+                short entryCount = reader.ReadInt16();
+                for (int i = 0; i < entryCount; i++)
                 {
-                    var valueType = (IniValueType)reader.ReadByte();
-                    switch (valueType)
-                    {
-                        case IniValueType.Boolean:
-                            entry.Add(new BooleanValue(reader) { Entry = entry });
-                            break;
-                        case IniValueType.Int32:
-                            entry.Add(new Int32Value(reader) { Entry = entry });
-                            break;
-                        case IniValueType.Single:
-                            entry.Add(new SingleValue(reader) { Entry = entry });
-                            break;
-                        case IniValueType.String:
-                            entry.Add(new StringValue(reader, stringBlock) { Entry = entry });
-                            break;
-                        default:
-                            throw new FileContentException(path, BINI, "Unknown BINI value type: " + valueType);
-                    }
-                }
-                section.Add(entry);
-            }
+                    var entryNameOffset = reader.ReadInt16();
+                    var entryName = stringBlock.Get(entryNameOffset);
 
-            yield return section;
+                    var entry = new Entry(section, entryName);
+
+                    var valueCount = reader.ReadByte();
+                    var values = new List<IValue>(valueCount);
+
+                    for (int j = 0; j < valueCount; j++)
+                    {
+                        var valueType = (IniValueType)reader.ReadByte();
+                        switch (valueType)
+                        {
+                            case IniValueType.Boolean:
+                                entry.Add(new BooleanValue(reader) { Entry = entry });
+                                break;
+                            case IniValueType.Int32:
+                                entry.Add(new Int32Value(reader) { Entry = entry });
+                                break;
+                            case IniValueType.Single:
+                                entry.Add(new SingleValue(reader) { Entry = entry });
+                                break;
+                            case IniValueType.String:
+                                entry.Add(new StringValue(reader, stringBlock) { Entry = entry });
+                                break;
+                            default:
+                                throw new FileContentException(path, BINI, "Unknown BINI value type: " + valueType);
+                        }
+                    }
+                    section.Add(entry);
+                }
+
+                yield return section;
+            }
         }
     }
 }

@@ -12,16 +12,14 @@ public class HeadlessContext : IGLWindow, IUIThread
     internal int UiThreadId;
     public bool IsUiThread() => UiThreadId == Thread.CurrentThread.ManagedThreadId;
 
-    private ConcurrentQueue<Action?> queue = new();
+    private ConcurrentQueue<Action> queue = new ConcurrentQueue<Action>();
 
-    public RenderContext RenderContext { get; internal set; } = null!;
+    public RenderContext RenderContext { get; internal set; }
 
     public void QueueUIThread(Action work)
     {
-        if (!IsUiThread())
-            queue.Enqueue(work);
-        else
-            work.Invoke();
+        if (IsUiThread()) work();
+        else queue.Enqueue(work);
     }
 
     public void RunUIEvents()
@@ -30,7 +28,7 @@ public class HeadlessContext : IGLWindow, IUIThread
         while (queue.Count > 0)
         {
             if (queue.TryDequeue(out var a))
-                a?.Invoke();
+                a();
         }
     }
 
@@ -44,41 +42,29 @@ public class HeadlessContext : IGLWindow, IUIThread
         if (SDL3.Supported)
         {
             if (!SDL3.SDL_Init(SDL3.SDL_InitFlags.SDL_INIT_VIDEO))
-            {
                 throw new Exception("SDL_Init failed");
-            }
-
             win = SDL3.SDL_CreateWindow("Headless Librelancer", 128, 128,
                 SDL3.SDL_WindowFlags.SDL_WINDOW_HIDDEN | SDL3.SDL_WindowFlags.SDL_WINDOW_OPENGL);
+
         }
         else
         {
             if (SDL2.SDL_Init(SDL2.SDL_INIT_VIDEO) != 0)
-            {
                 throw new Exception("SDL_Init failed");
-            }
-
             win = SDL2.SDL_CreateWindow("Headless Librelancer",
                 SDL2.SDL_WINDOWPOS_UNDEFINED, SDL2.SDL_WINDOWPOS_UNDEFINED,
                 128, 128,
                 SDL2.SDL_WindowFlags.SDL_WINDOW_HIDDEN | SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL);
         }
-
         if (win == IntPtr.Zero)
-        {
             throw new Exception("Failed to create hidden SDL window");
-        }
-
         var ctx = GLRenderContext.Create(win);
-
-        return ctx switch
+        if (ctx == null)
+            throw new Exception("Failed to create OpenGL context");
+        return new HeadlessContext()
         {
-            null => throw new Exception("Failed to create OpenGL context"),
-            _ => new HeadlessContext()
-            {
-                RenderContext = new RenderContext(ctx),
-                UiThreadId = Thread.CurrentThread.ManagedThreadId
-            }
+            RenderContext = new RenderContext(ctx),
+            UiThreadId = Thread.CurrentThread.ManagedThreadId
         };
     }
 }

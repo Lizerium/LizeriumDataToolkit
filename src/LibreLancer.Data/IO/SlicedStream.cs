@@ -3,7 +3,7 @@ using System.IO;
 
 namespace LibreLancer.Data.IO;
 
-internal class SlicedStream : Stream
+class SlicedStream : Stream
 {
     public long SliceLength;
     public long SliceStart;

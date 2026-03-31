@@ -4,13 +4,14 @@
 
 using System;
 
-namespace LibreLancer.Graphics;
-
-public enum PrimitiveTypes : byte
+namespace LibreLancer.Graphics
 {
-    TriangleList,
-    TriangleStrip,
-    LineList,
-    LineStrip,
-    Points
+    public enum PrimitiveTypes : byte
+    {
+        TriangleList,
+        TriangleStrip,
+        LineList,
+		LineStrip,
+		Points
+    }
 }

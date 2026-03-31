@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LibreLancer;
 
-internal static class L85
+static class L85
 {
     private const string PREFIX = "$<~";
     private const string SUFFIX = "~>$";
@@ -41,26 +41,26 @@ internal static class L85
     };
 
 
-    public static bool IsL85String(string? toCheck)
+    public static bool IsL85String(string toCheck)
     {
-        if (toCheck is null || !toCheck.StartsWith(PREFIX) || !toCheck.EndsWith(SUFFIX))
+        if (!toCheck.StartsWith(PREFIX) || !toCheck.EndsWith(SUFFIX))
             return false;
 
         var s = toCheck.AsSpan().Slice(PREFIX.Length, toCheck.Length - PREFIX.Length - SUFFIX.Length);
         var lengthMod5 = s.Length % 5;
         if ((lengthMod5 != 0) && (s.Length - 1) % 5 != 0)
             return false;
-
-        if (lengthMod5 == 0)
+        if (lengthMod5 != 0)
         {
-            return true;
+            if (!int.TryParse(s[s.Length - 1].ToString(), out var pd)
+                || pd < 1
+                || pd > 3)
+                return false;
         }
-
-        return int.TryParse(s[^1].ToString(), out var pd)
-               && pd is >= 1 and <= 3;
+        return true;
     }
 
-    private static byte[] Deflate(byte[] inArray)
+    static byte[] Deflate(byte[] inArray)
     {
         using var ms = new MemoryStream();
         using (var strm = new DeflateStream(ms, CompressionLevel.Fastest, false))
@@ -68,7 +68,7 @@ internal static class L85
         return ms.ToArray();
     }
 
-    private static byte[]? Inflate(byte[] array)
+    static byte[] Inflate(byte[] array)
     {
         using var ms = new MemoryStream(array);
         using var ms2 = new MemoryStream();
@@ -77,11 +77,11 @@ internal static class L85
         return ms2.ToArray();
     }
 
-    public static string? ToL85String(byte[] inArray)
+    public static string ToL85String(byte[] inArray)
     {
         if (inArray == null)
         {
-            throw new ArgumentNullException(nameof(inArray));
+            throw new ArgumentNullException("inArray");
         }
 
         if (inArray.Length == 0)
@@ -106,12 +106,14 @@ internal static class L85
         return z85String;
     }
 
-    public static byte[]? FromL85String(string? str) =>
-        str is null || !str.StartsWith(PREFIX) || !str.EndsWith(SUFFIX)
-            ? throw new Exception("Invalid L85 string")
-            : Inflate(Z85Decode(str.AsSpan().Slice(PREFIX.Length, str.Length - PREFIX.Length - SUFFIX.Length)));
+    public static byte[] FromL85String(string str)
+    {
+        if (!str.StartsWith(PREFIX) || !str.EndsWith(SUFFIX))
+            throw new Exception("Invalid L85 string");
+        return Inflate(Z85Decode(str.AsSpan().Slice(PREFIX.Length, str.Length - PREFIX.Length - SUFFIX.Length)));
+    }
 
-    private static string? L85Encode(byte[] inArray, int bytesToPad)
+    static string L85Encode(byte[] inArray, int bytesToPad)
     {
         var encodedLength = ((inArray.Length / 4) * 5); // 4 bytes = 5 chars
 
@@ -146,7 +148,7 @@ internal static class L85
         return sb.ToString();
     }
 
-    private static byte[] Z85Decode(ReadOnlySpan<char> s)
+    static byte[] Z85Decode(ReadOnlySpan<char> s)
     {
         var lengthMod5 = s.Length % 5;
         if ((lengthMod5 != 0) && (s.Length - 1) % 5 != 0)

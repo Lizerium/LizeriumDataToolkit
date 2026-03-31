@@ -3,8 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 namespace LibreLancer.Graphics;
-
-internal unsafe class BytecodesBundle
+unsafe class BytecodesBundle
 {
     public uint FeatureMask { get; private set; }
     public int ShaderCount => shaderOffsets.Length;
@@ -16,14 +15,14 @@ internal unsafe class BytecodesBundle
         shaderOffsets[shader].Length
     );
 
-    private Bundled[] shaderOffsets = [];
-    private byte[] data = [];
+    private Bundled[] shaderOffsets;
+    private byte[] data;
     private int dataOffset;
 
+    private byte[] Data;
     private const ulong SIGNATURE = 0x524448534C4C0008; //\b\0LLSHDR
     private const uint VERSION = 1;
-
-    private record struct Bundled(uint Features, int Offset, int Length);
+    record struct Bundled(uint Features, int Offset, int Length);
     public static BytecodesBundle FromStream(Stream stream)
     {
         using var decomp = new ZstdSharp.DecompressionStream(stream);

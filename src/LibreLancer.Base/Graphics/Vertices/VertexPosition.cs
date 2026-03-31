@@ -6,24 +6,25 @@ using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace LibreLancer.Graphics.Vertices;
-
-[StructLayout(LayoutKind.Sequential)]
-public struct VertexPosition : IVertexType
+namespace LibreLancer.Graphics.Vertices
 {
-    public Vector3 Position;
-
-    public VertexPosition(Vector3 position)
-        : this()
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VertexPosition : IVertexType
     {
-        Position = position;
-    }
+        public Vector3 Position;
 
-    public VertexDeclaration GetVertexDeclaration()
-    {
-        return new VertexDeclaration(
-            sizeof(float) * 3,
-            new VertexElement(VertexSlots.Position, 3, VertexElementType.Float, false, 0)
-        );
+        public VertexPosition(Vector3 position)
+            : this()
+        {
+            this.Position = position;
+        }
+
+		public VertexDeclaration GetVertexDeclaration()
+		{
+			return new VertexDeclaration(
+				sizeof(float) * 3,
+				new VertexElement(VertexSlots.Position, 3, VertexElementType.Float, false, 0)
+			);
+		}
     }
 }

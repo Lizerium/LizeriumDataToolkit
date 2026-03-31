@@ -3,14 +3,13 @@ using System.Runtime.InteropServices;
 
 namespace LibreLancer.Dialogs;
 
-internal enum NFDResult : int
+enum NFDResult : int
 {
     NFD_ERROR,
     NFD_OKAY,
     NFD_CANCEL
 }
-
-internal static unsafe class NFD
+static unsafe class NFD
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct NFDFilterItem
@@ -29,13 +28,6 @@ internal static unsafe class NFD
     [DllImport("lancerdialogs", CallingConvention = CallingConvention.Cdecl)]
     public static extern NFDResult NFD_OpenDialogN(
         void** outPath,
-        NFDFilterItem* filterList,
-        uint filterCount,
-        void* defaultPath);
-
-    [DllImport("lancerdialogs", CallingConvention = CallingConvention.Cdecl)]
-    public static extern NFDResult NFD_OpenDialogMultipleN(
-        void** outPathSet,                   // const nfdpathset_t** in C
         NFDFilterItem* filterList,
         uint filterCount,
         void* defaultPath);
@@ -60,26 +52,5 @@ internal static unsafe class NFD
     public static extern void* NFD_GetError();
 
     [DllImport("lancerdialogs", CallingConvention =  CallingConvention.Cdecl)]
-    public static extern void NFD_PathSet_FreePathN(void* path);
-
-    [DllImport("lancerdialogs", CallingConvention =  CallingConvention.Cdecl)]
     public static extern void NFD_FreePathN(void* path);
-
-    // Count entries in the set
-    [DllImport("lancerdialogs", CallingConvention = CallingConvention.Cdecl)]
-    public static extern NFDResult NFD_PathSet_GetCount(
-        void* pathSet,
-        ulong* count);
-
-    // Get path at index (returns new wchar_t* that MUST be freed)
-    [DllImport("lancerdialogs", CallingConvention = CallingConvention.Cdecl)]
-    public static extern NFDResult NFD_PathSet_GetPathN(
-        void* pathSet,
-        ulong index,
-        void** outPath);
-
-    // Free entire pathset structure (NOT the individual paths)
-    [DllImport("lancerdialogs", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void NFD_PathSet_Free(
-        void* pathSet);
 }

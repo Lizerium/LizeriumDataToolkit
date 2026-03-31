@@ -2,7 +2,7 @@ using System;
 
 namespace LibreLancer.Graphics.Backends.Null;
 
-internal class NullElementBuffer : IElementBuffer
+class NullElementBuffer : IElementBuffer
 {
     public void Dispose()
     {

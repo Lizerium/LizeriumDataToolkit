@@ -49,8 +49,6 @@ namespace LibreLancer.Graphics.Backends.OpenGL
         private static delegate* unmanaged<uint,int,int*,IntPtr,void> _glGetProgramInfoLog;
         private static delegate* unmanaged<uint> _glCreateProgram;
         private static delegate* unmanaged<uint,uint,void> _glAttachShader;
-        private static delegate* unmanaged<uint,uint,void> _glDetachShader;
-        private static delegate* unmanaged<uint,void> _glDeleteShader;
         private static delegate* unmanaged<uint,uint,byte*,void> _glBindAttribLocation;
         private static delegate* unmanaged<uint,uint,byte*,void> _glBindFragDataLocation;
         private static delegate* unmanaged<uint,void> _glLinkProgram;
@@ -115,7 +113,7 @@ namespace LibreLancer.Graphics.Backends.OpenGL
         private static delegate* unmanaged<IntPtr,void> _glDeleteSync;
         private static delegate* unmanaged<IntPtr,uint,ulong,uint> _glClientWaitSync;
         private static delegate* unmanaged<void> _glFlush;
-        
+
         public static void Load(Func<string,IntPtr> getProcAddress, bool isGles)
         {
             _glEnable = (delegate* unmanaged<int,void>)getProcAddress("glEnable");
@@ -160,8 +158,6 @@ namespace LibreLancer.Graphics.Backends.OpenGL
             _glGetProgramInfoLog = (delegate* unmanaged<uint,int,int*,IntPtr,void>)getProcAddress("glGetProgramInfoLog");
             _glCreateProgram = (delegate* unmanaged<uint>)getProcAddress("glCreateProgram");
             _glAttachShader = (delegate* unmanaged<uint,uint,void>)getProcAddress("glAttachShader");
-            _glDetachShader = (delegate* unmanaged<uint,uint,void>)getProcAddress("glDetachShader");
-            _glDeleteShader = (delegate* unmanaged<uint,void>)getProcAddress("glDeleteShader");
             _glBindAttribLocation = (delegate* unmanaged<uint,uint,byte*,void>)getProcAddress("glBindAttribLocation");
             _glBindFragDataLocation = (delegate* unmanaged<uint,uint,byte*,void>)getProcAddress("glBindFragDataLocation");
             _glLinkProgram = (delegate* unmanaged<uint,void>)getProcAddress("glLinkProgram");
@@ -442,16 +438,6 @@ namespace LibreLancer.Graphics.Backends.OpenGL
         public static void AttachShader(uint program, uint shader)
         {
             _glAttachShader(program, shader);
-            ErrorCheck();
-        }
-        public static void DetachShader(uint program, uint shader)
-        {
-            _glDetachShader(program, shader);
-            ErrorCheck();
-        }
-        public static void DeleteShader(uint shader)
-        {
-            _glDeleteShader(shader);
             ErrorCheck();
         }
         public static void BindAttribLocation(uint program, uint index, string name)
@@ -828,4 +814,3 @@ namespace LibreLancer.Graphics.Backends.OpenGL
         }
     }
 }
-

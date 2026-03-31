@@ -18,10 +18,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -73,7 +73,6 @@ internal static class StringCoda
         bool? hw = null;
         int width = GetNextWidth(ewidths, int.MaxValue, ref hw);
         int start = 0;
-
         do
         {
             int end = GetLineEnd(start, width, self);
@@ -86,7 +85,6 @@ internal static class StringCoda
                 end -= endCorrection;
             bool needContinuation = end != self.Length && !IsEolChar(c);
             string continuation = "";
-
             if (needContinuation)
             {
                 --end;
@@ -128,7 +126,6 @@ internal static class StringCoda
     {
         int end = Math.Min(start + length, description.Length);
         int sep = -1;
-
         for (int i = start; i < end; ++i)
         {
             if (i + 2 <= description.Length && description.Substring(i, 2).Equals("\r\n"))
@@ -154,7 +151,7 @@ public class OptionValueCollection : IList, IList<string>
     {
         this.c = c;
     }
-
+    
     void ICollection.CopyTo(Array array, int index)
     {
         (values as ICollection).CopyTo(array, index);
@@ -195,33 +192,33 @@ public class OptionValueCollection : IList, IList<string>
     {
         return values.GetEnumerator();
     }
-
+    
     public IEnumerator<string> GetEnumerator()
     {
         return values.GetEnumerator();
     }
 
-    int IList.Add(object? value)
+    int IList.Add(object value)
     {
         return (values as IList).Add(value);
     }
 
-    bool IList.Contains(object? value)
+    bool IList.Contains(object value)
     {
         return (values as IList).Contains(value);
     }
 
-    int IList.IndexOf(object? value)
+    int IList.IndexOf(object value)
     {
         return (values as IList).IndexOf(value);
     }
 
-    void IList.Insert(int index, object? value)
+    void IList.Insert(int index, object value)
     {
         (values as IList).Insert(index, value);
     }
 
-    void IList.Remove(object? value)
+    void IList.Remove(object value)
     {
         (values as IList).Remove(value);
     }
@@ -233,7 +230,7 @@ public class OptionValueCollection : IList, IList<string>
 
     bool IList.IsFixedSize => false;
 
-    object? IList.this[int index]
+    object IList.this[int index]
     {
         get => this[index];
         set => (values as IList)[index] = value;
@@ -264,7 +261,7 @@ public class OptionValueCollection : IList, IList<string>
             index >= values.Count)
             throw new OptionException(string.Format(
                     c.OptionSet.MessageLocalizer("Missing required value for option '{0}'."), c.OptionName),
-                c.OptionName ?? "Unknown");
+                c.OptionName);
     }
 
     public string this[int index]
@@ -272,7 +269,7 @@ public class OptionValueCollection : IList, IList<string>
         get
         {
             AssertValid(index);
-            return (index >= values.Count ? null : values[index])!;
+            return index >= values.Count ? null : values[index];
         }
         set => values[index] = value;
     }
@@ -291,8 +288,9 @@ public class OptionContext
         OptionValues = new OptionValueCollection(this);
     }
 
-    public Option? Option { get; set; }
-    public string? OptionName { get; set; }
+    public Option Option { get; set; }
+
+    public string OptionName { get; set; }
 
     public int OptionIndex { get; set; }
 
@@ -312,15 +310,12 @@ public abstract class Option
 {
     protected Option(string prototype, string description, int maxValueCount = 1, bool hidden = false)
     {
+        if (prototype == null)
+            throw new ArgumentNullException(nameof(prototype));
         if (prototype.Length == 0)
-        {
             throw new ArgumentException("Cannot be the empty string.", nameof(prototype));
-        }
-
         if (maxValueCount < 0)
-        {
             throw new ArgumentOutOfRangeException(nameof(maxValueCount));
-        }
 
         Prototype = prototype;
         Description = description;
@@ -328,7 +323,7 @@ public abstract class Option
         Names = this is OptionSet.Category
             // append GetHashCode() so that "duplicate" categories have distinct
             // names, e.g. adding multiple "" categories should be valid.
-            ? new[] { prototype + GetHashCode() }
+            ? new[] {prototype + GetHashCode()}
             : prototype.Split('|');
 
         if (this is OptionSet.Category)
@@ -364,7 +359,7 @@ public abstract class Option
 
     public bool Hidden { get; }
 
-    protected static T? Parse<T>(string? value, OptionContext c)
+    protected static T Parse<T>(string value, OptionContext c)
     {
         Type tt = typeof(T);
         bool nullable =
@@ -372,15 +367,14 @@ public abstract class Option
             tt.IsGenericType &&
             !tt.IsGenericTypeDefinition &&
             tt.GetGenericTypeDefinition() == typeof(Nullable<>);
-        Type targetType = nullable ? tt.GetGenericArguments()[0] : tt;
-        T? t = default;
-
+            Type targetType = nullable ? tt.GetGenericArguments()[0] : tt;
+        T t = default;
         try
         {
             if (value != null)
             {
                 TypeConverter conv = TypeDescriptor.GetConverter(targetType);
-                t = (T?) conv.ConvertFromString(value);
+                t = (T) conv.ConvertFromString(value);
             }
         }
         catch (Exception e)
@@ -389,29 +383,28 @@ public abstract class Option
                 string.Format(
                     c.OptionSet.MessageLocalizer("Could not convert string `{0}' to type {1} for option `{2}'."),
                     value, targetType.Name, c.OptionName),
-                c.OptionName!, e);
+                c.OptionName, e);
         }
 
         return t;
     }
 
-    internal string[]? Names { get; }
-    internal string[]? ValueSeparators { get; private set; }
+    internal string[] Names { get; }
+    internal string[] ValueSeparators { get; private set; }
 
-    private static readonly char[] NameTerminator = { '=', ':' };
+    private static readonly char[] NameTerminator = {'=', ':'};
 
     private OptionValueType ParsePrototype()
     {
         char type = '\0';
         List<string> seps = new();
-
-        for (int i = 0; i < Names?.Length; ++i)
+        for (int i = 0; i < Names.Length; ++i)
         {
-            var name = Names[i];
+            string name = Names[i];
             if (name.Length == 0)
                 throw new ArgumentException("Empty option names are not supported.", "prototype");
 
-            var end = name.IndexOfAny(NameTerminator);
+            int end = name.IndexOfAny(NameTerminator);
             if (end == -1)
                 continue;
             Names[i] = name[..end];
@@ -427,15 +420,19 @@ public abstract class Option
         if (type == '\0')
             return OptionValueType.None;
 
-        ValueSeparators = MaxValueCount switch
+        if (MaxValueCount <= 1 && seps.Count != 0)
+            throw new ArgumentException(
+                $"Cannot provide key/value separators for Options taking {MaxValueCount} value(s).",
+                "prototype");
+        if (MaxValueCount > 1)
         {
-            <= 1 when seps.Count != 0 => throw new ArgumentException(
-                $"Cannot provide key/value separators for Options taking {MaxValueCount} value(s).", "prototype"),
-            > 1 when seps.Count == 0 => [":", "="],
-            > 1 when seps is [{ Length: 0 }] => null,
-            > 1 => seps.ToArray(),
-            _ => ValueSeparators
-        };
+            if (seps.Count == 0)
+                ValueSeparators = new[] {":", "="};
+            else if (seps.Count == 1 && seps[0].Length == 0)
+                ValueSeparators = null;
+            else
+                ValueSeparators = seps.ToArray();
+        }
 
         return type == '=' ? OptionValueType.Required : OptionValueType.Optional;
     }
@@ -443,7 +440,6 @@ public abstract class Option
     private static void AddSeparators(string name, int end, ICollection<string> seps)
     {
         int start = -1;
-
         for (int i = end + 1; i < name.Length; ++i)
             switch (name[i])
             {
@@ -497,9 +493,9 @@ public abstract class Option
 
 public abstract class ArgumentSource
 {
-    public abstract string[]? GetNames();
+    public abstract string[] GetNames();
     public abstract string Description { get; }
-    public abstract bool GetArguments(string value, out IEnumerable<string?> replacement);
+    public abstract bool GetArguments(string value, out IEnumerable<string> replacement);
 
     public static IEnumerable<string> GetArgumentsFromFile(string file)
     {
@@ -577,7 +573,7 @@ public abstract class ArgumentSource
 [Serializable]
 public class OptionException : Exception
 {
-    private string? option;
+    private string option;
 
     public OptionException()
     {
@@ -595,7 +591,6 @@ public class OptionException : Exception
         option = optionName;
     }
 
-    [Obsolete("StreamingContext ctor is deprecated")]
     protected OptionException(SerializationInfo info, StreamingContext context)
         : base(info, context)
     {
@@ -605,20 +600,19 @@ public class OptionException : Exception
 
 public delegate void OptionAction<in TKey, in TValue>(TKey key, TValue value);
 
-// TODO: We use null values on OptionSet, but KeyedCollection has a NotNull constraint
 public class OptionSet : KeyedCollection<string, Option>
 {
     public OptionSet()
-        : this(null!, null)
+        : this(null, null)
     {
     }
 
-    public OptionSet(StringComparer? comparer)
-        : this(null!, comparer)
+    public OptionSet(StringComparer comparer)
+        : this(null, comparer)
     {
     }
 
-    public OptionSet(MessageLocalizerConverter localizer, StringComparer? comparer = null)
+    public OptionSet(MessageLocalizerConverter localizer, StringComparer comparer = null)
         : base(comparer)
     {
         ArgumentSources = new ReadOnlyCollection<ArgumentSource>(sources);
@@ -634,6 +628,8 @@ public class OptionSet : KeyedCollection<string, Option>
 
     protected override string GetKeyForItem(Option item)
     {
+        if (item == null)
+            throw new ArgumentNullException("option");
         if (item.Names != null && item.Names.Length > 0)
             return item.Names[0];
         // This should never happen, as it's invalid for Option to be
@@ -642,8 +638,10 @@ public class OptionSet : KeyedCollection<string, Option>
     }
 
     [Obsolete("Use KeyedCollection.this[string]")]
-    protected Option? GetOptionForName(string option)
+    protected Option GetOptionForName(string option)
     {
+        if (option == null)
+            throw new ArgumentNullException(nameof(option));
         try
         {
             return base[option];
@@ -664,12 +662,8 @@ public class OptionSet : KeyedCollection<string, Option>
     {
         Option p = Items[index];
         base.RemoveItem(index);
-
         // KeyedCollection.RemoveItem() handles the 0th item
-        for (int i = 1; i < p.Names?.Length; ++i)
-        {
-            Dictionary?.Remove(p.Names[i]);
-        }
+        for (int i = 1; i < p.Names.Length; ++i) Dictionary?.Remove(p.Names[i]);
     }
 
     protected override void SetItem(int index, Option item)
@@ -680,12 +674,13 @@ public class OptionSet : KeyedCollection<string, Option>
 
     private void AddImpl(Option option)
     {
-        List<string> added = new(option.Names?.Length ?? 0);
-
+        if (option == null)
+            throw new ArgumentNullException(nameof(option));
+        List<string> added = new(option.Names.Length);
         try
         {
             // KeyedCollection.InsertItem/SetItem handle the 0th name.
-            for (int i = 1; i < option.Names?.Length; ++i)
+            for (int i = 1; i < option.Names.Length; ++i)
             {
                 Dictionary?.Add(option.Names[i], option);
                 added.Add(option.Names[i]);
@@ -693,11 +688,8 @@ public class OptionSet : KeyedCollection<string, Option>
         }
         catch (Exception)
         {
-            foreach (var name in added)
-            {
+            foreach (string name in added)
                 Dictionary?.Remove(name);
-            }
-
             throw;
         }
     }
@@ -705,10 +697,7 @@ public class OptionSet : KeyedCollection<string, Option>
     public OptionSet Add(string header)
     {
         if (header == null)
-        {
             throw new ArgumentNullException(nameof(header));
-        }
-
         Add(new Category(header));
         return this;
     }
@@ -740,8 +729,7 @@ public class OptionSet : KeyedCollection<string, Option>
     {
         private readonly Action<OptionValueCollection> action;
 
-        public ActionOption(string? prototype, string? description, int count, Action<OptionValueCollection> action,
-            bool hidden = false)
+        public ActionOption(string prototype, string description, int count, Action<OptionValueCollection> action, bool hidden = false)
             : base(prototype, description, count, hidden)
         {
             this.action = action ?? throw new ArgumentNullException(nameof(action));
@@ -753,12 +741,12 @@ public class OptionSet : KeyedCollection<string, Option>
         }
     }
 
-    public OptionSet Add(string prototype, Action<string?> action)
+    public OptionSet Add(string prototype, Action<string> action)
     {
-        return Add(prototype, null!, action);
+        return Add(prototype, null, action);
     }
 
-    public OptionSet Add(string prototype, string description, Action<string?> action)
+    public OptionSet Add(string prototype, string description, Action<string> action)
     {
         return Add(prototype, description, action, false);
     }
@@ -778,12 +766,12 @@ public class OptionSet : KeyedCollection<string, Option>
         return Add(prototype, null, action);
     }
 
-    public OptionSet Add(string? prototype, string? description, OptionAction<string, string> action)
+    public OptionSet Add(string prototype, string description, OptionAction<string, string> action)
     {
         return Add(prototype, description, action, false);
     }
 
-    public OptionSet Add(string? prototype, string? description, OptionAction<string, string> action, bool hidden)
+    public OptionSet Add(string prototype, string description, OptionAction<string, string> action, bool hidden)
     {
         if (action == null)
             throw new ArgumentNullException(nameof(action));
@@ -819,7 +807,12 @@ public class OptionSet : KeyedCollection<string, Option>
             this.action = action ?? throw new ArgumentNullException(nameof(action));
         }
 
-        protected override void OnParseComplete(OptionContext c) => action(Parse<TKey>(c.OptionValues[0], c)!, Parse<TValue>(c.OptionValues[1], c)!);
+        protected override void OnParseComplete(OptionContext c)
+        {
+            action(
+                Parse<TKey>(c.OptionValues[0], c),
+                Parse<TValue>(c.OptionValues[1], c));
+        }
     }
 
     public OptionSet Add<T>(string prototype, Action<T> action)
@@ -855,7 +848,7 @@ public class OptionSet : KeyedCollection<string, Option>
         return new OptionContext(this);
     }
 
-    public List<string> Parse(IEnumerable<string?> arguments)
+    public List<string> Parse(IEnumerable<string> arguments)
     {
         if (arguments == null)
             throw new ArgumentNullException(nameof(arguments));
@@ -865,11 +858,9 @@ public class OptionSet : KeyedCollection<string, Option>
         List<string> unprocessed = new();
         Option def = Contains("<>") ? this["<>"] : null;
         ArgumentEnumerator ae = new(arguments);
-
         foreach (string argument in ae)
         {
             ++c.OptionIndex;
-
             if (argument == "--")
             {
                 process = false;
@@ -894,24 +885,23 @@ public class OptionSet : KeyedCollection<string, Option>
 
     private class ArgumentEnumerator : IEnumerable<string>
     {
-        private readonly List<IEnumerator<string?>> sources = new();
+        private readonly List<IEnumerator<string>> sources = new();
 
-        public ArgumentEnumerator(IEnumerable<string?> arguments)
+        public ArgumentEnumerator(IEnumerable<string> arguments)
         {
             sources.Add(arguments.GetEnumerator());
         }
 
-        public void Add(IEnumerable<string?> arguments)
+        public void Add(IEnumerable<string> arguments)
         {
             sources.Add(arguments.GetEnumerator());
         }
 
-        public IEnumerator<string?> GetEnumerator()
+        public IEnumerator<string> GetEnumerator()
         {
             do
             {
-                IEnumerator<string?> c = sources[^1];
-
+                IEnumerator<string> c = sources[^1];
                 if (c.MoveNext())
                 {
                     yield return c.Current;
@@ -934,7 +924,7 @@ public class OptionSet : KeyedCollection<string, Option>
     {
         foreach (ArgumentSource source in sources)
         {
-            if (!source.GetArguments(argument, out IEnumerable<string?> replacement))
+            if (!source.GetArguments(argument, out IEnumerable<string> replacement))
                 continue;
             ae.Add(replacement);
             return true;
@@ -960,7 +950,7 @@ public class OptionSet : KeyedCollection<string, Option>
     private readonly Regex ValueOption = new(
         @"^(?<flag>--|-|/)(?<name>[^:=]+)((?<sep>[:=])(?<value>.*))?$");
 
-    private bool GetOptionParts(string argument, out string? flag, out string? name, out string? sep, out string? value)
+    private bool GetOptionParts(string argument, out string flag, out string name, out string sep, out string value)
     {
         if (argument == null)
             throw new ArgumentNullException(nameof(argument));
@@ -970,14 +960,11 @@ public class OptionSet : KeyedCollection<string, Option>
         if (!m.Success) return false;
         flag = m.Groups["flag"].Value;
         name = m.Groups["name"].Value;
-
-        if (!m.Groups["sep"].Success || !m.Groups["value"].Success)
+        if (m.Groups["sep"].Success && m.Groups["value"].Success)
         {
-            return true;
+            sep = m.Groups["sep"].Value;
+            value = m.Groups["value"].Value;
         }
-
-        sep = m.Groups["sep"].Value;
-        value = m.Groups["value"].Value;
 
         return true;
     }
@@ -990,18 +977,16 @@ public class OptionSet : KeyedCollection<string, Option>
             return true;
         }
 
-        string? f, n, s, v;
+        string f, n, s, v;
         if (!GetOptionParts(argument, out f, out n, out s, out v))
             return false;
 
         Option p;
-
         if (Contains(n))
         {
             p = this[n];
             c.OptionName = f + n;
             c.Option = p;
-
             switch (p.OptionValueType)
             {
                 case OptionValueType.None:
@@ -1025,9 +1010,8 @@ public class OptionSet : KeyedCollection<string, Option>
     {
         if (option != null)
             foreach (string o in c.Option.ValueSeparators != null
-                         ? option.Split(c.Option.ValueSeparators, c.Option.MaxValueCount - c.OptionValues.Count,
-                             StringSplitOptions.None)
-                         : new[] { option })
+                         ? option.Split(c.Option.ValueSeparators, c.Option.MaxValueCount - c.OptionValues.Count, StringSplitOptions.None)
+                         : new[] {option})
                 c.OptionValues.Add(o);
         if (c.OptionValues.Count == c.Option.MaxValueCount ||
             c.Option.OptionValueType == OptionValueType.Optional)
@@ -1042,7 +1026,6 @@ public class OptionSet : KeyedCollection<string, Option>
     private bool ParseBool(string option, string n, OptionContext c)
     {
         string rn;
-
         if (n.Length >= 1 && (n[^1] == '+' || n[^1] == '-') &&
             Contains(rn = n[..^1]))
         {
@@ -1062,12 +1045,10 @@ public class OptionSet : KeyedCollection<string, Option>
     {
         if (f != "-")
             return false;
-
         for (int i = 0; i < n.Length; ++i)
         {
             string opt = f + n[i];
             string rn = n[i].ToString();
-
             if (!Contains(rn))
             {
                 if (i == 0)
@@ -1077,7 +1058,6 @@ public class OptionSet : KeyedCollection<string, Option>
             }
 
             Option p = this[rn];
-
             switch (p.OptionValueType)
             {
                 case OptionValueType.None:
@@ -1111,7 +1091,7 @@ public class OptionSet : KeyedCollection<string, Option>
     private const int OptionWidth = 29;
     private const int Description_FirstWidth = 80 - OptionWidth;
     private const int Description_RemWidth = 80 - OptionWidth - 2;
-
+    
     public void WriteOptionDescriptions(TextWriter o)
     {
         foreach (Option p in this)
@@ -1147,7 +1127,7 @@ public class OptionSet : KeyedCollection<string, Option>
 
         foreach (ArgumentSource s in sources)
         {
-            string[]? names = s.GetNames();
+            string[] names = s.GetNames();
             if (names == null || names.Length == 0)
                 continue;
 
@@ -1155,7 +1135,6 @@ public class OptionSet : KeyedCollection<string, Option>
 
             Write(o, ref written, "  ");
             Write(o, ref written, names[0]);
-
             for (int i = 1; i < names.Length; ++i)
             {
                 Write(o, ref written, ", ");
@@ -1176,13 +1155,12 @@ public class OptionSet : KeyedCollection<string, Option>
                 Description_FirstWidth, Description_RemWidth);
         }
     }
-
+    
 
     private void WriteDescription(TextWriter o, string value, string prefix, int firstWidth, int remWidth)
     {
         bool indent = false;
-
-        foreach (var line in GetLines(MessageLocalizer(GetDescription(value)), firstWidth, remWidth))
+        foreach (string line in GetLines(MessageLocalizer(GetDescription(value)), firstWidth, remWidth))
         {
             if (indent)
                 o.Write(prefix);
@@ -1193,7 +1171,7 @@ public class OptionSet : KeyedCollection<string, Option>
 
     private bool WriteOptionPrototype(TextWriter o, Option p, ref int written)
     {
-        var names = p.Names;
+        string[] names = p.Names;
 
         int i = GetNextOptionIndex(names, 0);
         if (i == names.Length)
@@ -1223,11 +1201,10 @@ public class OptionSet : KeyedCollection<string, Option>
         {
             if (p.OptionValueType == OptionValueType.Optional) Write(o, ref written, MessageLocalizer("["));
             Write(o, ref written, MessageLocalizer("=" + GetArgumentName(0, p.MaxValueCount, p.Description)));
-            var sep = p.ValueSeparators != null && p.ValueSeparators.Length > 0
+            string sep = p.ValueSeparators != null && p.ValueSeparators.Length > 0
                 ? p.ValueSeparators[0]
                 : " ";
-            for (int c = 1; c < p.MaxValueCount; ++c)
-                Write(o, ref written, MessageLocalizer(sep + GetArgumentName(c, p.MaxValueCount, p.Description)));
+            for (int c = 1; c < p.MaxValueCount; ++c) Write(o, ref written, MessageLocalizer(sep + GetArgumentName(c, p.MaxValueCount, p.Description)));
             if (p.OptionValueType == OptionValueType.Optional) Write(o, ref written, MessageLocalizer("]"));
         }
 
@@ -1248,21 +1225,17 @@ public class OptionSet : KeyedCollection<string, Option>
 
     private static string GetArgumentName(int index, int maxIndex, string description)
     {
-        MatchCollection
-            matches = Regex.Matches(description ?? "", @"(?<=(?<!\{)\{)[^{}]*(?=\}(?!\}))"); // ignore double braces
+        MatchCollection matches = Regex.Matches(description ?? "", @"(?<=(?<!\{)\{)[^{}]*(?=\}(?!\}))"); // ignore double braces 
         string argName = "";
-
         foreach (Match match in matches)
         {
-            var parts = match.Value.Split(':');
-            argName = maxIndex switch
-            {
-                // for maxIndex=1 it can be {foo} or {0:foo}
-                1 => parts[^1],
-                // look for {i:foo} if maxIndex > 1
-                > 1 when parts.Length == 2 && parts[0] == index.ToString(CultureInfo.InvariantCulture) => parts[1],
-                _ => argName
-            };
+            string[] parts = match.Value.Split(':');
+            // for maxIndex=1 it can be {foo} or {0:foo}
+            if (maxIndex == 1) argName = parts[^1];
+            // look for {i:foo} if maxIndex > 1
+            if (maxIndex > 1 && parts.Length == 2 &&
+                parts[0] == index.ToString(CultureInfo.InvariantCulture))
+                argName = parts[1];
         }
 
         if (string.IsNullOrEmpty(argName)) argName = maxIndex == 1 ? "VALUE" : "VALUE" + (index + 1);
@@ -1275,7 +1248,6 @@ public class OptionSet : KeyedCollection<string, Option>
             return string.Empty;
         StringBuilder sb = new(description.Length);
         int start = -1;
-
         for (int i = 0; i < description.Length; ++i)
             switch (description[i])
             {

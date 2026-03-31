@@ -2,7 +2,7 @@ using System;
 
 namespace LibreLancer;
 
-internal static class SDLCommon
+static class SDLCommon
 {
     public static int SDL_GL_GetSwapInterval()
     {

@@ -3,7 +3,7 @@ using LibreLancer.Graphics;
 
 namespace LibreLancer.Platforms;
 
-internal interface IGame : IUIThread
+interface IGame : IUIThread
 {
     //Events
     void WaitForEvent(int timeout);
@@ -18,14 +18,13 @@ internal interface IGame : IUIThread
     string Title { get; set; }
     Point MinimumWindowSize { get; set; }
     void BringToFront();
-    void SetFullScreen(bool fullscreen);
-    bool IsFullScreen { get; set; }
     void SetVSync(bool vsync);
     //Loop
     void Run(Game loop);
     void Exit();
     void Crashed();
     void Yield();
+
     bool IsUiThread();
     //Timing
     double TotalTime { get; }
@@ -34,20 +33,20 @@ internal interface IGame : IUIThread
     double FrameTime { get; }
     //Hardware
     bool RelativeMouseMode { get; set; }
-    string? Renderer { get; }
+    string Renderer { get; }
     RenderContext RenderContext { get; }
     Mouse Mouse { get; }
     Keyboard Keyboard { get; }
     void EnableTextInput();
     void DisableTextInput();
-    void SetTextInputRect(Rectangle? rect);
-    ScreenshotSaveHandler? OnScreenshotSave { get; set; }
+    void ToggleFullScreen();
+    ScreenshotSaveHandler OnScreenshotSave { get; set; }
     void Screenshot(string filename);
     //Clipboard
     ClipboardContents ClipboardStatus();
-    string? GetClipboardText();
-    void SetClipboardText(string? text);
-    byte[]? GetClipboardArray();
+    string GetClipboardText();
+    void SetClipboardText(string text);
+    byte[] GetClipboardArray();
     void SetClipboardArray(byte[] array);
     //Cursor
     CursorKind CursorKind { get; set; }

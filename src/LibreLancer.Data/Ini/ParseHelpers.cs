@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace LibreLancer.Data.Ini;
 
@@ -9,13 +8,12 @@ public static class ParseHelpers
     public static uint Hash(string s)
     {
         uint num = 0x811c9dc5;
-
         for (int i = 0; i < s.Length; i++)
         {
-            var c = (int) s[i];
+            var c = (int)s[i];
             if ((c >= 65 && c <= 90))
                 c ^= (1 << 5);
-            num = ((uint) c ^ num) * 0x1000193;
+            num = ((uint)c ^ num) * 0x1000193;
         }
 
         return num;
@@ -32,14 +30,18 @@ public static class ParseHelpers
         return false;
     }
 
-    private static bool HasIgnoreCase(string[] array, string value) => array.Any(t => t.Equals(value, StringComparison.OrdinalIgnoreCase));
+    private static bool HasIgnoreCase(string[] array, string value)
+    {
+        for(int i = 0; i < array.Length; i++)
+            if (array[i].Equals(value, StringComparison.OrdinalIgnoreCase))
+                return true;
+        return false;
+    }
 
     public static IEnumerable<Section> Chunk(string[] delimiters, Section parent)
     {
-        Section? currentSection = null;
-
-        foreach (var e in parent)
-        {
+        Section currentSection = null;
+        foreach (var e in parent) {
             if (HasIgnoreCase(delimiters, e.Name))
             {
                 if (currentSection != null)
@@ -50,13 +52,11 @@ public static class ParseHelpers
                     Line = parent.Line
                 };
             }
-
             if (currentSection != null)
                 currentSection.Add(e);
             else
                 IniDiagnostic.EntryWithoutObject(e, parent);
         }
-
         if (currentSection != null) yield return currentSection;
     }
 }

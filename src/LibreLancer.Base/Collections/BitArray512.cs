@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -17,7 +18,7 @@ public struct BitArray512
     private long G;
     private long H;
 
-    private static ref long Element(int index, ref BitArray512 x)
+    static ref long Element(int index, ref BitArray512 x)
     {
         if (index < 0 || index > 511) throw new IndexOutOfRangeException();
         return ref Unsafe.Add(ref x.A, (nuint) (index >> 6));

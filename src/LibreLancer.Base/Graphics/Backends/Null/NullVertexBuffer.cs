@@ -4,10 +4,10 @@ using LibreLancer.Graphics.Vertices;
 
 namespace LibreLancer.Graphics.Backends.Null;
 
-internal class NullVertexBuffer : IVertexBuffer
+class NullVertexBuffer : IVertexBuffer
 {
-    private NativeBuffer? buffer;
-    private readonly bool isStream = false;
+    private NativeBuffer buffer;
+    private bool isStream = false;
     public void Dispose()
     {
         buffer?.Dispose();
@@ -17,20 +17,15 @@ internal class NullVertexBuffer : IVertexBuffer
     {
         try
         {
-            VertexType = (IVertexType)Activator.CreateInstance (type)!;
+            VertexType = (IVertexType)Activator.CreateInstance (type);
             decl = VertexType.GetVertexDeclaration();
         }
         catch (Exception)
         {
-            throw new Exception($"{type.FullName} is not a valid IVertexType");
+            throw new Exception(string.Format("{0} is not a valid IVertexType", type.FullName));
         }
-
-        buffer = isStream switch
-        {
-            true => UnsafeHelpers.Allocate(length * decl.Stride),
-            _ => buffer
-        };
-
+        if(isStream)
+            buffer = UnsafeHelpers.Allocate(length * decl.Stride);
         VertexCount = length;
         this.isStream = isStream;
     }
@@ -46,7 +41,7 @@ internal class NullVertexBuffer : IVertexBuffer
     }
 
 
-    private readonly VertexDeclaration decl;
+    private VertexDeclaration decl;
 
     public IVertexType VertexType { get; set;  }
     public int VertexCount { get; set;  }
@@ -58,14 +53,11 @@ internal class NullVertexBuffer : IVertexBuffer
     public void Expand(int newSize)
     {
         VertexCount = newSize;
-
-        if (!isStream)
+        if (isStream)
         {
-            return;
+            buffer.Dispose();
+            buffer = UnsafeHelpers.Allocate(newSize * decl.Stride);
         }
-
-        buffer?.Dispose();
-        buffer = UnsafeHelpers.Allocate(newSize * decl.Stride);
     }
 
     public void Draw(PrimitiveTypes primitiveType, int baseVertex, int startIndex, int primitiveCount)
@@ -76,7 +68,7 @@ internal class NullVertexBuffer : IVertexBuffer
     {
     }
 
-    public IntPtr BeginStreaming() => (IntPtr)(buffer ?? throw new InvalidOperationException("VertexBuffer was not initialized"));
+    public IntPtr BeginStreaming() => (IntPtr)buffer;
 
     public void EndStreaming(int count)
     {

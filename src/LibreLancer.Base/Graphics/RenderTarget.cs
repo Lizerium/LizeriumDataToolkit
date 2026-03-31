@@ -5,10 +5,11 @@
 using System;
 using LibreLancer.Graphics.Backends;
 
-namespace LibreLancer.Graphics;
-
-public abstract class RenderTarget : IDisposable
+namespace LibreLancer.Graphics
 {
-    internal IRenderTarget? Target;
-    public abstract void Dispose();
+    public abstract class RenderTarget : IDisposable
+    {
+        internal IRenderTarget Target;
+        public abstract void Dispose();
+    }
 }

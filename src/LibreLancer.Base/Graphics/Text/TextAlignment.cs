@@ -3,11 +3,13 @@
 // LICENSE, which is part of this source code package
 
 
-namespace LibreLancer.Graphics.Text;
-
-public enum TextAlignment
+namespace LibreLancer.Graphics.Text
 {
-    Left = 0,
-    Right = 1,
-    Center = 2
+	public enum TextAlignment
+	{
+		Left = 0,
+		Right = 1,
+		Center = 2
+	}
 }
+

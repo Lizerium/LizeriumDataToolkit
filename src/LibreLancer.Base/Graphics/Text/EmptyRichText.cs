@@ -1,7 +1,6 @@
-
 namespace LibreLancer.Graphics.Text;
 
-internal class EmptyRichText : BuiltRichText
+class EmptyRichText : BuiltRichText
 {
     public override void Recalculate(float width)
     {

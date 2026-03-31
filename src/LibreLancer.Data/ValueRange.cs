@@ -1,6 +1,7 @@
-namespace LibreLancer.Data;
-
-public record struct ValueRange<T>(T Min, T Max) where T : struct
+namespace LibreLancer.Data
 {
-    public override string ToString() => $"[{Min} -> {Max}]";
+    public record struct ValueRange<T>(T Min, T Max) where T : struct
+    {
+        public override string ToString() => $"[{Min} -> {Max}]";
+    }
 }

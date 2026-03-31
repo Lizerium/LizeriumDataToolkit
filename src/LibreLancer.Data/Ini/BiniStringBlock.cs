@@ -2,36 +2,28 @@
 // This file is subject to the terms and conditions defined in
 // LICENSE, which is part of this source code package
 
-using System;
 using System.Collections.Generic;
 
-namespace LibreLancer.Data.Ini;
-
-//Avoid repeated allocations in BINI loading
-public class BiniStringBlock
+namespace LibreLancer.Data.Ini
 {
-    private readonly string block;
-    private readonly Dictionary<int,string> strings = new();
-    private readonly IniStringPool? stringPool;
-
-    public BiniStringBlock(string block, IniStringPool? stringPool = null)
+    //Avoid repeated allocations in BINI loading
+    public class BiniStringBlock
     {
-        this.block = block;
-        this.stringPool = stringPool;
-    }
-
-    public string Get(int strOffset)
-    {
-        if (strings.TryGetValue(strOffset, out var s))
+        private string block;
+        Dictionary<int,string> strings = new Dictionary<int, string>();
+        public BiniStringBlock(string block)
         {
-            return s;
+            this.block = block;
         }
 
-        s = stringPool != null
-            ? stringPool.FromSpan(block.AsSpan(strOffset, block.IndexOf('\0', strOffset) - strOffset))
-            : block.Substring(strOffset, block.IndexOf('\0', strOffset) - strOffset);
-
-        strings.Add(strOffset, s);
-        return s;
+        public string Get(int strOffset)
+        {
+            if (!strings.TryGetValue(strOffset, out string s))
+            {
+                s = block.Substring(strOffset, block.IndexOf('\0', strOffset) - strOffset);
+                strings.Add(strOffset, s);
+            }
+            return s;
+        }
     }
 }

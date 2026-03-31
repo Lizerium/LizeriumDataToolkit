@@ -1,7 +1,6 @@
-
 namespace LibreLancer.Graphics.Backends;
 
-internal interface IRenderTarget2D : IRenderTarget
+interface IRenderTarget2D : IRenderTarget
 {
     void BlitToScreen();
     void BlitToBuffer(RenderTarget2D other, Point offset);

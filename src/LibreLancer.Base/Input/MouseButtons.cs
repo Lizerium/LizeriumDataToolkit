@@ -4,15 +4,17 @@
 
 using System;
 
-namespace LibreLancer;
-
-[Flags]
-public enum MouseButtons
+namespace LibreLancer
 {
-    None = 0,
-    Left = 1,
-    Right = 2,
-    Middle = 4,
-    X1 = 8,
-    X2 = 16
+	[Flags]
+	public enum MouseButtons
+	{
+		None = 0,
+		Left = 1,
+		Right = 2,
+		Middle = 4,
+		X1 = 8,
+		X2 = 16
+	}
 }
+

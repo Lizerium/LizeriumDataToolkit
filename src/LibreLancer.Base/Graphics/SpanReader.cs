@@ -3,7 +3,7 @@ using System.Text;
 
 namespace LibreLancer.Graphics;
 
-internal ref struct SpanReader
+ref struct SpanReader
 {
     public int Offset;
     public ReadOnlySpan<byte> Span;

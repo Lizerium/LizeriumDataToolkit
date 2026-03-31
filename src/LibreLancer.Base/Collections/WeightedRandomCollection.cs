@@ -4,64 +4,64 @@
 
 using System;
 using System.Linq;
-
-namespace LibreLancer;
-
-public class WeightedRandomCollection<T>
+namespace LibreLancer
 {
-    private T[] items;
-    private float[] cutoffs = null!;
-    private int[] weights = null!;
-    private float max;
-
-    public WeightedRandomCollection(T[] items, int[] weights)
-    {
-        if (items.Length < weights.Length)
-        {
-            weights = weights.Take(items.Length).ToArray();
+	public class WeightedRandomCollection<T>
+	{
+		T[] items;
+		float[] cutoffs;
+        int[] weights;
+		float max;
+		public WeightedRandomCollection(T[] items, int[] weights)
+		{
+            if (items.Length < weights.Length)
+            {
+                weights = weights.Take(items.Length).ToArray();
+            }
+            else if (items.Length > weights.Length)
+            {
+                var w2 = new int[items.Length];
+                weights.CopyTo(w2, 0);
+                weights = w2;
+            }
+            CalculateCutoffs(weights);
+            this.items = items.ShallowCopy();
         }
-        else if (items.Length > weights.Length)
+
+        void CalculateCutoffs(int[] inWeights)
         {
-            var w2 = new int[items.Length];
-            weights.CopyTo(w2, 0);
-            weights = w2;
+            this.weights = inWeights;
+            max = inWeights.Sum();
+            float current = 0;
+            cutoffs = new float[inWeights.Length];
+            for (int i = 0; i < inWeights.Length; i++)
+            {
+                cutoffs[i] = current + inWeights[i];
+                current += inWeights[i];
+            }
         }
 
-        CalculateCutoffs(weights);
-        this.items = items.ShallowCopy() ?? [];
-    }
-
-    private void CalculateCutoffs(int[] inWeights)
-    {
-        weights = inWeights;
-        max = inWeights.Sum();
-        float current = 0;
-        cutoffs = new float[inWeights.Length];
-        for (var i = 0; i < inWeights.Length; i++)
+        private WeightedRandomCollection()
         {
-            cutoffs[i] = current + inWeights[i];
-            current += inWeights[i];
         }
-    }
 
-    private WeightedRandomCollection(WeightedRandomCollection<T> collection)
-    {
-        items = collection.items.ShallowCopy() ?? [];
-        cutoffs = collection.cutoffs.ShallowCopy() ?? [];
-        max = collection.max;
-        weights = collection.weights;
-    }
+        public T GetNext(Random random)
+		{
+			var val = (float)(random.NextDouble() * max);
+			for (int i = 0; i < cutoffs.Length; i++)
+			{
+				if (val < cutoffs[i])
+					return items[i];
+			}
+			return items[items.Length - 1];
+		}
 
-    public T GetNext(Random random)
-    {
-        var val = (float)(random.NextDouble() * max);
-        for (var i = 0; i < cutoffs.Length; i++)
+        public WeightedRandomCollection<T> Clone() => new WeightedRandomCollection<T>()
         {
-            if (val < cutoffs[i])
-                return items[i];
-        }
-        return items[^1];
+            items = items.ShallowCopy(),
+            cutoffs = cutoffs.ShallowCopy(),
+            max = max,
+        };
     }
-
-    public WeightedRandomCollection<T> Clone() => new(this);
 }
+

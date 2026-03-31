@@ -7,103 +7,96 @@ namespace LibreLancer.Data.IO;
 
 public abstract class BaseFileSystemProvider : IFileProvider
 {
-    protected VfsDirectory Root { get; set; } = null!;
+    protected VfsDirectory Root { get; set; }
 
-    public virtual Stream? Open(string filename)
+    public virtual Stream Open(string filename)
     {
         var it = GetItem(filename);
-        return it is VfsFile file
-            ? file.OpenRead()
-            : null;
+        if (it is VfsFile file)
+            return file.OpenRead();
+        else
+            return null;
     }
 
     public virtual IEnumerable<string> GetFiles(string path)
     {
         var it = GetItem(path);
-        return (it is not VfsDirectory dir
-            ? Array.Empty<string>()
-            : dir.Items.Values.Where(x => x is VfsFile).Select(x => x.Name))!;
+        if (it is not VfsDirectory dir)
+            return Array.Empty<string>();
+        return dir.Items.Values.Where(x => x is VfsFile).Select(x => x.Name);
     }
 
     public virtual IEnumerable<string> GetDirectories(string path)
     {
         var it = GetItem(path);
-        return (it is not VfsDirectory dir
-            ? Array.Empty<string>()
-            : dir.Items.Values.Where(x => x is VfsDirectory).Select(x => x.Name))!;
+        if (it is not VfsDirectory dir)
+            return Array.Empty<string>();
+        return dir.Items.Values.Where(x => x is VfsDirectory).Select(x => x.Name);
     }
 
-    public virtual bool GetBackingFileName(string path, out string? fileName)
+    public virtual bool GetBackingFileName(string path, out string filename)
     {
         var it = GetItem(path);
-        switch (it)
+        if (it is VfsFile file)
         {
-            case VfsFile file:
-                fileName = file.GetBackingFilename();
-                return true;
-            case VfsDirectory dir:
-                return GetDirectoryBackingPath(dir, out fileName);
-            default:
-                fileName = null;
-                return false;
+            filename = file.GetBackingFilename();
+            return true;
+        }
+        else if (it is VfsDirectory dir)
+        {
+            return GetDirectoryBackingPath(dir, out filename);
+        }
+        else
+        {
+            filename = null;
+            return false;
         }
     }
 
     protected string GetDirectoryPath(VfsDirectory dir)
     {
         if (dir.Parent == null)
-        {
             return "";
-        }
-
-        List<string> components = [];
+        List<string> components = new List<string>();
         var d = dir;
-        while (d is { Parent: not null, Name: not null })
-        {
+        while (d?.Parent != null) {
             components.Add(d.Name);
             d = d.Parent;
         }
-
         components.Reverse();
         return string.Join('/', components);
     }
 
-    protected virtual bool GetDirectoryBackingPath(VfsDirectory dir, out string? fileName)
+    protected virtual bool GetDirectoryBackingPath(VfsDirectory dir, out string filename)
     {
-        fileName = null;
+        filename = null;
         return false;
     }
 
-    protected VfsItem? GetItem(string filename)
+    protected VfsItem GetItem(string filename)
     {
-        var split = filename.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries);
+        var split = filename.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
         VfsDirectory current = Root;
         for (int i = 0; i < split.Length; i++)
         {
-            switch (split[i])
+            if (split[i] == ".")
+                continue;
+            if (split[i] == "..")
             {
-                case ".":
-                    continue;
-                case ".." when current.Parent == null:
+                if (current.Parent == null)
                     return null;
-                case "..":
-                    current = current.Parent;
-                    continue;
+                current = current.Parent;
+                continue;
             }
-
             if (!current.Items.TryGetValue(split[i], out var item))
-            {
                 return null;
-            }
-
-            switch (item)
+            if (item is VfsDirectory dir)
+                current = dir;
+            else if (item is VfsFile)
             {
-                case VfsDirectory dir:
-                    current = dir;
-                    break;
-                case VfsFile when i == split.Length - 1:
+                if (i == split.Length - 1)
                     return item;
-                case VfsFile:
+                else
                     return null;
             }
         }

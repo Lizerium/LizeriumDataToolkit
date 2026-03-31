@@ -4,23 +4,25 @@
 
 using System;
 
-namespace LibreLancer.Graphics;
-
-internal static class SurfaceFormatExtensions
+namespace LibreLancer.Graphics
 {
-    internal static int GetSize(this SurfaceFormat format)
+    static class SurfaceFormatExtensions
     {
-        switch (format)
+        internal static int GetSize(this SurfaceFormat format)
         {
-            case SurfaceFormat.Dxt1:
-            case SurfaceFormat.Rgtc1:
-                return 8;
-            case SurfaceFormat.Dxt3:
-            case SurfaceFormat.Dxt5:
-            case SurfaceFormat.Rgtc2:
-                return 16;
-            default:
-                throw new InvalidOperationException();
+            switch (format)
+            {
+                case SurfaceFormat.Dxt1:
+                case SurfaceFormat.Rgtc1:
+                    return 8;
+                case SurfaceFormat.Dxt3:
+                case SurfaceFormat.Dxt5:
+                case SurfaceFormat.Rgtc2:
+                    return 16;
+                default:
+                    throw new InvalidOperationException();
+            }
         }
     }
 }
+

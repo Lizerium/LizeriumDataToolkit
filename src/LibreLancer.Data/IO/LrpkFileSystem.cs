@@ -6,7 +6,7 @@ namespace LibreLancer.Data.IO;
 
 public sealed class LrpkFileSystem : BaseFileSystemProvider
 {
-    private readonly Func<Stream> openStream;
+    private Func<Stream> openStream;
 
     public LrpkFileSystem(Func<Stream> openStream)
     {
@@ -20,7 +20,7 @@ public sealed class LrpkFileSystem : BaseFileSystemProvider
         Refresh();
     }
 
-    private record struct BlockInfo(long Offset, long Length);
+    record struct BlockInfo(long Offset, long Length);
 
     public override void Refresh()
     {
@@ -46,7 +46,7 @@ public sealed class LrpkFileSystem : BaseFileSystemProvider
         Root = (VfsDirectory)ReadEntry(reader, openStream, cache, null);
     }
 
-    private static byte[] Decompress(Stream stream, long offset, long length)
+    static byte[] Decompress(Stream stream, long offset, long length)
     {
         using var wrapped = new SlicedStream(offset, length, stream);
         using var decomp = new DecompressionStream(wrapped);
@@ -55,12 +55,12 @@ public sealed class LrpkFileSystem : BaseFileSystemProvider
         return output.ToArray();
     }
 
-    private class BlockCache
+    class BlockCache
     {
-        public readonly BlockInfo[] Blocks;
-        public readonly Func<Stream> GetFileStream;
-        public readonly WeakReference<byte[]>[] Decompressed;
-        private readonly object[] locks;
+        public BlockInfo[] Blocks;
+        public Func<Stream> GetFileStream;
+        public WeakReference<byte[]>[] Decompressed;
+        private object[] locks;
 
         public BlockCache(BlockInfo[] blocks, Func<Stream> getFileStream)
         {
@@ -68,7 +68,7 @@ public sealed class LrpkFileSystem : BaseFileSystemProvider
             this.GetFileStream = getFileStream;
             Decompressed = new WeakReference<byte[]>[blocks.Length];
             for (int i = 0; i < Decompressed.Length; i++)
-                Decompressed[i] = new WeakReference<byte[]>(null!);
+                Decompressed[i] = new WeakReference<byte[]>(null);
             locks = new object[blocks.Length];
             for (int i = 0; i < locks.Length; i++)
                 locks[i] = new object();
@@ -89,9 +89,9 @@ public sealed class LrpkFileSystem : BaseFileSystemProvider
     }
 
 
-    private sealed class LrpkOffsetFile : VfsFile
+    sealed class LrpkOffsetFile : VfsFile
     {
-        public required Func<Stream> GetFileStream;
+        public Func<Stream> GetFileStream;
         public long Offset;
         public long Length;
         public override Stream OpenRead()
@@ -101,17 +101,17 @@ public sealed class LrpkFileSystem : BaseFileSystemProvider
         }
     }
 
-    private sealed class LrpkEmptyFile : VfsFile
+    sealed class LrpkEmptyFile : VfsFile
     {
         public override Stream OpenRead()
         {
-            return new MemoryStream([], false);
+            return new MemoryStream(Array.Empty<byte>(), false);
         }
     }
 
-    private sealed class LrpkZstdFile : VfsFile
+    sealed class LrpkZstdFile : VfsFile
     {
-        public required Func<Stream> GetFileStream;
+        public Func<Stream> GetFileStream;
         public long Offset;
         public long Length;
         public override Stream OpenRead()
@@ -121,9 +121,9 @@ public sealed class LrpkFileSystem : BaseFileSystemProvider
         }
     }
 
-    private sealed class LrpkBlockFile : VfsFile
+    sealed class LrpkBlockFile : VfsFile
     {
-        public required BlockCache Cache;
+        public BlockCache Cache;
         public int Block;
         public long Offset;
         public long Length;
@@ -143,23 +143,20 @@ public sealed class LrpkFileSystem : BaseFileSystemProvider
     // 3: ZSTD Compressed File
     // 4-255: Block compressed file
 
-    private static VfsItem ReadEntry(BinaryReader reader, Func<Stream> getFileStream, BlockCache blockCache, VfsDirectory? parent)
+    static VfsItem ReadEntry(BinaryReader reader, Func<Stream> getFileStream, BlockCache blockCache, VfsDirectory parent)
     {
         var kind = reader.ReadByte();
         var name = reader.ReadStringUTF8();
         if (kind == 0)
         {
             var count = (int)reader.ReadVarUInt64();
-            var dir = new VfsDirectory { Parent = parent,
-                Name = name
-            };
-
+            var dir = new VfsDirectory() { Parent = parent };
+            dir.Name = name;
             for (int i = 0; i < count; i++)
             {
                 var ent = ReadEntry(reader, getFileStream, blockCache, dir);
-                dir.Items[ent.Name!] = ent;
+                dir.Items[ent.Name] = ent;
             }
-
             return dir;
         }
         else if (kind == 1)

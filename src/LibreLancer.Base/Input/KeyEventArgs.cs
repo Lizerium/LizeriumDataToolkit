@@ -2,17 +2,21 @@
 // This file is subject to the terms and conditions defined in
 // LICENSE, which is part of this source code package
 
-namespace LibreLancer;
+using System;
 
-public class KeyEventArgs
+namespace LibreLancer
 {
-    public Keys Key { get; private set; }
-    public KeyModifiers Modifiers { get; private set; }
-    public bool IsRepeat { get; private set; }
-    public KeyEventArgs (Keys key, KeyModifiers mod, bool repeat)
-    {
-        Key = key;
-        Modifiers = mod;
-        IsRepeat = repeat;
-    }
+	public class KeyEventArgs
+	{
+		public Keys Key { get; private set; }
+		public KeyModifiers Modifiers { get; private set; }
+		public bool IsRepeat { get; private set; }
+		public KeyEventArgs (Keys key, KeyModifiers mod, bool repeat)
+		{
+			Key = key;
+			Modifiers = mod;
+			IsRepeat = repeat;
+		}
+	}
 }
+

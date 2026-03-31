@@ -7,103 +7,100 @@ using System.IO;
 using System.Runtime.InteropServices;
 using LibreLancer.Platforms.Linux;
 
-namespace LibreLancer.Platforms;
-
-internal class LinuxPlatform : IPlatform
+namespace LibreLancer.Platforms
 {
-    [DllImport("libgtk-3.so.0")]
-    private static extern bool gtk_init_check(IntPtr argc, IntPtr argv);
+	class LinuxPlatform : IPlatform
+	{
+        [DllImport("libgtk-3.so.0")]
+        static extern bool gtk_init_check(IntPtr argc, IntPtr argv);
 
-    [DllImport("libX11.so.6")]
-    private static extern int XInitThreads();
+        [DllImport("libX11.so.6")]
+        static extern int XInitThreads();
 
-    private IntPtr fcconfig;
+		IntPtr fcconfig;
 
-    private string? tempFontsDirectory;
+        private string tempFontsDirectory;
 
-    public LinuxPlatform()
-    {
-        fcconfig = LibFontConfig.FcInitLoadConfigAndFonts();
-        LibFontConfig.FcConfigSetCurrent(fcconfig);
-        tempFontsDirectory = Directory.CreateTempSubdirectory("librelancer").FullName;
-    }
-
-    public void Init(string sdlBackend)
-    {
-        if ("x11".Equals(sdlBackend, StringComparison.OrdinalIgnoreCase))
-            XInitThreads();
-
-        gtk_init_check(IntPtr.Zero, IntPtr.Zero);
-    }
-
-    public string GetLocalConfigFolder()
-    {
-        var osConfigDir = Environment.GetEnvironmentVariable("XDG_CONFIG_HOME");
-
-        if (!string.IsNullOrEmpty(osConfigDir))
+		public LinuxPlatform()
         {
+            fcconfig = LibFontConfig.FcInitLoadConfigAndFonts();
+            LibFontConfig.FcConfigSetCurrent(fcconfig);
+            tempFontsDirectory = Directory.CreateTempSubdirectory("librelancer").FullName;
+        }
+
+        public void Init(string sdlBackend)
+        {
+            if ("x11".Equals(sdlBackend, StringComparison.OrdinalIgnoreCase))
+                XInitThreads();
+            gtk_init_check(IntPtr.Zero, IntPtr.Zero);
+        }
+
+        public string GetLocalConfigFolder()
+        {
+            string osConfigDir = Environment.GetEnvironmentVariable("XDG_CONFIG_HOME");
+            if (String.IsNullOrEmpty(osConfigDir))
+            {
+                osConfigDir = Environment.GetEnvironmentVariable("HOME");
+                if (String.IsNullOrEmpty(osConfigDir))
+                {
+                    return Environment.CurrentDirectory;
+                }
+                osConfigDir += "/.config/";
+            }
             return osConfigDir;
         }
 
-        osConfigDir = Environment.GetEnvironmentVariable("HOME");
-        if (string.IsNullOrEmpty(osConfigDir))
+        public bool IsDirCaseSensitive (string directory)
+		{
+			return true;
+		}
+
+        static LibFontConfig.FcResult GetString(IntPtr pattern, string obj, int n, ref string val)
         {
-            return Environment.CurrentDirectory;
+            var ptr = IntPtr.Zero;
+            var result =  LibFontConfig.FcPatternGetString (pattern, obj, n, ref ptr);
+            if (result == LibFontConfig.FcResult.Match)
+                val = Marshal.PtrToStringAnsi (ptr);
+            return result;
+        }
+        public byte[] GetMonospaceBytes()
+        {
+            var pat = LibFontConfig.FcNameParse("monospace");
+            LibFontConfig.FcConfigSubstitute(fcconfig, pat, LibFontConfig.FcMatchKind.Pattern);
+            LibFontConfig.FcDefaultSubstitute(pat);
+            var fnt = LibFontConfig.FcFontMatch(fcconfig, pat, out _);
+            string file = null;
+            bool use = GetString(fnt, LibFontConfig.FC_FILE, 0, ref file) == LibFontConfig.FcResult.Match;
+            LibFontConfig.FcPatternDestroy(pat);
+            if (use)
+                return System.IO.File.ReadAllBytes(file);
+            else
+                throw new Exception("No system monospace font found");
         }
 
-        osConfigDir += "/.config/";
-        return osConfigDir;
-    }
-
-    public bool IsDirCaseSensitive (string directory)
-    {
-        return true;
-    }
-
-    private static LibFontConfig.FcResult GetString(IntPtr pattern, string obj, int n, ref string? val)
-    {
-        var ptr = IntPtr.Zero;
-        var result =  LibFontConfig.FcPatternGetString (pattern, obj, n, ref ptr);
-        if (result == LibFontConfig.FcResult.Match)
-            val = Marshal.PtrToStringAnsi(ptr);
-        return result;
-    }
-    public byte[] GetMonospaceBytes()
-    {
-        var pat = LibFontConfig.FcNameParse("monospace");
-        LibFontConfig.FcConfigSubstitute(fcconfig, pat, LibFontConfig.FcMatchKind.Pattern);
-        LibFontConfig.FcDefaultSubstitute(pat);
-        var fnt = LibFontConfig.FcFontMatch(fcconfig, pat, out _);
-        string? file = null;
-        bool use = GetString(fnt, LibFontConfig.FC_FILE, 0, ref file) == LibFontConfig.FcResult.Match;
-        LibFontConfig.FcPatternDestroy(pat);
-        if (use)
-            return File.ReadAllBytes(file!);
-        else
-            throw new Exception("No system monospace font found");
-    }
-
-    public PlatformEvents SubscribeEvents(IUIThread mainThread)
-    {
-        var ev = new GLib.GMountEvents(mainThread);
-        ev.Start();
-        return ev;
-    }
-
-    public MountInfo[] GetMounts() => GLib.GetMounts();
-
-    public void Shutdown()
-    {
-        try
+        public PlatformEvents SubscribeEvents(IUIThread mainThread)
         {
-            if(!string.IsNullOrWhiteSpace(tempFontsDirectory))
-                Directory.Delete(tempFontsDirectory, true);
-        }
-        catch (Exception)
-        {
-            // ignored
+            var ev = new GLib.GMountEvents(mainThread);
+            ev.Start();
+            return ev;
         }
 
-        tempFontsDirectory = null;
+        public MountInfo[] GetMounts() => GLib.GetMounts();
+
+        public void Shutdown()
+        {
+            try
+            {
+                if(!string.IsNullOrWhiteSpace(tempFontsDirectory))
+                    Directory.Delete(tempFontsDirectory, true);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            tempFontsDirectory = null;
+        }
     }
 }
+

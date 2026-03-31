@@ -2,7 +2,7 @@ using System;
 
 namespace LibreLancer.Graphics.Backends.OpenGL;
 
-internal static class EnumConversions
+static class EnumConversions
 {
     public static int ToGL(this CubeMapFace face)
     {

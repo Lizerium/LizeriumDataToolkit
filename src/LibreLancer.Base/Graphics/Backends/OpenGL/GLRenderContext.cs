@@ -6,7 +6,7 @@ using LibreLancer.Graphics.Vertices;
 
 namespace LibreLancer.Graphics.Backends.OpenGL;
 
-internal class GLRenderContext : IRenderContext
+class GLRenderContext : IRenderContext
 {
     public uint NullVAO;
 
@@ -21,18 +21,17 @@ internal class GLRenderContext : IRenderContext
     private GLRenderContext(IntPtr glContext) =>
         this.glContext = glContext;
 
-    public static GLRenderContext? Create(IntPtr sdlWindow)
+    public static GLRenderContext Create(IntPtr sdlWindow)
     {
         var ptr = CreateGLContext(sdlWindow);
         if (ptr != IntPtr.Zero)
         {
             return new GLRenderContext(ptr);
         }
-
         return null;
     }
 
-    private static IntPtr CreateGLContext(IntPtr sdlWin)
+    static IntPtr CreateGLContext(IntPtr sdlWin)
     {
         IntPtr glcontext = IntPtr.Zero;
 
@@ -48,7 +47,7 @@ internal class GLRenderContext : IRenderContext
         return glcontext;
     }
 
-    private static IntPtr SDLGL_Create(IntPtr sdlWin, int major, int minor, bool gles)
+    static IntPtr SDLGL_Create(IntPtr sdlWin, int major, int minor, bool gles)
     {
         if (SDL3.Supported)
         {
@@ -72,7 +71,7 @@ internal class GLRenderContext : IRenderContext
             : SDL2.SDL_GL_CreateContext(sdlWin);
     }
 
-    private static void SDLGL_Delete(IntPtr ctx)
+    static void SDLGL_Delete(IntPtr ctx)
     {
         if (SDL3.Supported)
             SDL3.SDL_GL_DestroyContext(ctx);
@@ -81,11 +80,9 @@ internal class GLRenderContext : IRenderContext
     }
 
 
-    private static bool CreateContextCore(IntPtr sdlWin, out IntPtr ctx)
+    static bool CreateContextCore(IntPtr sdlWin, out IntPtr ctx)
     {
-        var use32 = Environment.GetEnvironmentVariable("LIBRELANCER_GL32");
-        int minorVersion = use32 == "1" ? 2 : 1;
-        ctx = SDLGL_Create(sdlWin, 3, minorVersion, false);
+        ctx = SDLGL_Create(sdlWin, 3, 1, false);
         if (ctx == IntPtr.Zero) return false;
         if (!GL.CheckStringSDL())
         {
@@ -94,8 +91,7 @@ internal class GLRenderContext : IRenderContext
         }
         return true;
     }
-
-    private static bool CreateContextES(IntPtr sdlWin, out IntPtr ctx)
+    static bool CreateContextES(IntPtr sdlWin, out IntPtr ctx)
     {
         //mesa on raspberry pi OS won't give you a 3.1 context if you request it
         //but it will give you 3.1 if you request 3.0  ¯\_(ツ)_/¯
@@ -172,7 +168,7 @@ internal class GLRenderContext : IRenderContext
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    private struct CameraMatrices
+    struct CameraMatrices
     {
         public Matrix4x4 View;
         public Matrix4x4 Projection;
@@ -210,24 +206,24 @@ internal class GLRenderContext : IRenderContext
 
     public void ApplyShader(IShader shader)
     {
-        if(shader.HasUniformBlock(1) && shader.UniformBlockTag(1) != cameraTag)
+        if (shader != null)
         {
-            shader.UniformBlockTag(1) = cameraTag;
-            shader.SetUniformBlock(1, ref matrices);
+            if(shader.HasUniformBlock(1) &&
+               shader.UniformBlockTag(1) != cameraTag)
+            {
+                shader.UniformBlockTag(1) = cameraTag;
+                shader.SetUniformBlock(1, ref matrices);
+            }
+            ((GLShader)shader).UseProgram();
+            applied.Shader = shader;
         }
-
-        ((GLShader)shader).UseProgram();
-        applied.Shader = shader;
     }
 
 
 
     public void ApplyState(ref GraphicsState requested)
     {
-        if (requested.Shader is not null)
-        {
-            ApplyShader(requested.Shader);
-        }
+        ApplyShader(requested.Shader);
 
         if (requested.ClearColor != applied.ClearColor)
         {
@@ -295,14 +291,11 @@ internal class GLRenderContext : IRenderContext
         }
 
         ApplyScissor(ref requested);
-
-        if (requested.PolygonOffset == applied.PolygonOffset)
+        if (requested.PolygonOffset != applied.PolygonOffset)
         {
-            return;
+            applied.PolygonOffset = requested.PolygonOffset;
+            GL.PolygonOffset(requested.PolygonOffset.X, requested.PolygonOffset.Y);
         }
-
-        applied.PolygonOffset = requested.PolygonOffset;
-        GL.PolygonOffset(requested.PolygonOffset.X, requested.PolygonOffset.Y);
     }
 
     private int lastHeight = 768;
@@ -314,15 +307,12 @@ internal class GLRenderContext : IRenderContext
         {
             convVp.Y = lastHeight - convVp.Y - convVp.Height;
         }
-
-        if (convVp == applied.Viewport)
+        if (convVp != applied.Viewport)
         {
-            return;
+            GL.Viewport(convVp.X, convVp.Y, convVp.Width, convVp.Height);
+            applied.Viewport = convVp;
+            applied.ScissorRect = new Rectangle();
         }
-
-        GL.Viewport(convVp.X, convVp.Y, convVp.Width, convVp.Height);
-        applied.Viewport = convVp;
-        applied.ScissorRect = new Rectangle();
     }
 
     public void Set2DState(bool depth, bool cull)
@@ -336,16 +326,14 @@ internal class GLRenderContext : IRenderContext
                 GL.Disable(GL.GL_DEPTH_TEST);
         }
 
-        if (cull == applied.CullEnabled)
+        if (cull != applied.CullEnabled)
         {
-            return;
+            applied.CullEnabled = cull;
+            if(cull)
+                GL.Enable(GL.GL_CULL_FACE);
+            else
+                GL.Disable(GL.GL_CULL_FACE);
         }
-
-        applied.CullEnabled = cull;
-        if (cull)
-            GL.Enable(GL.GL_CULL_FACE);
-        else
-            GL.Disable(GL.GL_CULL_FACE);
     }
 
     private Rectangle appliedConvertedScissor = new Rectangle();
@@ -448,7 +436,7 @@ internal class GLRenderContext : IRenderContext
         }
     }
 
-    public IRenderTarget? CurrentTarget => applied.RenderTarget;
+    public IRenderTarget CurrentTarget=> applied.RenderTarget;
 
     public void ApplyRenderTarget(ref GraphicsState requested)
     {
@@ -471,7 +459,7 @@ internal class GLRenderContext : IRenderContext
         _ => false
     };
 
-    public string? GetRenderer() => $"OpenGL Renderer - {GL.GetString(GL.GL_VERSION)} ({GL.GetString(GL.GL_RENDERER)})";
+    public string GetRenderer() => $"OpenGL Renderer - {GL.GetString(GL.GL_VERSION)} ({GL.GetString(GL.GL_RENDERER)})";
 
     public void MakeCurrent(IntPtr sdlWindow)
     {

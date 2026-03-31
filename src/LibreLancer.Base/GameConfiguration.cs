@@ -6,7 +6,7 @@ namespace LibreLancer;
 public class GameConfiguration
 {
     public bool IsSDL { get; private set; }
-    private Action? onTick;
+    private Action onTick;
     private int maxIterations;
 
     private GameConfiguration()
@@ -30,16 +30,16 @@ public class GameConfiguration
         return this;
     }
 
-    internal IGame GetGame(int width, int height, bool allowScreensaver)
+    internal IGame GetGame(int width, int height, bool fullscreen, bool allowScreensaver)
     {
-        if (!IsSDL)
+        if (IsSDL)
         {
-            return new NullGame() { OnTick = onTick, MaxIterations = maxIterations };
+            if (SDL3.Supported)
+                return new SDL3Game(width, height, fullscreen, allowScreensaver);
+            else
+                return new SDL2Game(width, height, fullscreen, allowScreensaver);
         }
-
-        return SDL3.Supported
-            ? new SDL3Game(width, height, allowScreensaver)
-            : new SDL2Game(width, height, allowScreensaver);
-
+        else
+            return new NullGame() { OnTick = onTick, MaxIterations = maxIterations};
     }
 }

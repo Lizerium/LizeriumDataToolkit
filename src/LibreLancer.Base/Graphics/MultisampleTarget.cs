@@ -4,25 +4,26 @@
 
 using LibreLancer.Graphics.Backends;
 
-namespace LibreLancer.Graphics;
-
-public class MultisampleTarget : RenderTarget
+namespace LibreLancer.Graphics
 {
-    public int Width => impl.Width;
-    public int Height => impl.Height;
+	public class MultisampleTarget : RenderTarget
+	{
+        public int Width => impl.Width;
+        public int Height => impl.Height;
 
-    private IMultisampleTarget impl;
+        private IMultisampleTarget impl;
 
-    public MultisampleTarget(RenderContext renderContext, int width, int height, int samples)
-    {
-        impl = renderContext.Backend.CreateMultisampleTarget(width, height, samples);
-        Target = impl;
+		public MultisampleTarget(RenderContext renderContext, int width, int height, int samples)
+        {
+            impl = renderContext.Backend.CreateMultisampleTarget(width, height, samples);
+            Target = impl;
+        }
+
+        public void BlitToScreen(Point offset) => impl.BlitToScreen(offset);
+
+        public void BlitToRenderTarget(RenderTarget2D rTarget) =>
+            impl.BlitToRenderTarget(rTarget.Backing);
+
+        public override void Dispose() => impl.Dispose();
     }
-
-    public void BlitToScreen(Point offset) => impl.BlitToScreen(offset);
-
-    public void BlitToRenderTarget(RenderTarget2D rTarget) =>
-        impl.BlitToRenderTarget(rTarget.Backing);
-
-    public override void Dispose() => impl.Dispose();
 }

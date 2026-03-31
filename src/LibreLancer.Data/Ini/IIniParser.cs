@@ -5,12 +5,13 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace LibreLancer.Data.Ini;
-
-public interface IIniParser
+namespace LibreLancer.Data.Ini
 {
-    bool CanParse(Stream stream);
+    public interface IIniParser
+    {
+        bool CanParse(Stream stream);
 
-    IEnumerable<Section> ParseIniFile(string? path, Stream stream, bool preparse = true, bool allowmaps = false, IniStringPool? stringPool = null);
+        IEnumerable<Section> ParseIniFile(string path, Stream stream, bool preparse = true, bool allowmaps = false);
 
+    }
 }

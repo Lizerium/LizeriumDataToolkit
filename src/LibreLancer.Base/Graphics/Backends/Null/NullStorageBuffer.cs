@@ -3,9 +3,15 @@ using System.Runtime.InteropServices;
 
 namespace LibreLancer.Graphics.Backends.Null;
 
-public class NullStorageBuffer(int size, int stride) : IStorageBuffer
+public class NullStorageBuffer : IStorageBuffer
 {
-    private readonly NativeBuffer buffer = UnsafeHelpers.Allocate(size * stride);
+    private NativeBuffer buffer;
+    private int size;
+
+    public NullStorageBuffer(int size, int stride)
+    {
+        buffer = UnsafeHelpers.Allocate(size * stride);
+    }
 
     public void Dispose()
     {

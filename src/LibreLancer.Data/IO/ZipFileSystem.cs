@@ -17,7 +17,7 @@ public sealed class ZipFileSystem : BaseFileSystemProvider
 
     private Func<Stream> openStream;
 
-    private (long dataStart, long dirOffset, long entryCount) ParseZipEOCD(Stream stream)
+    (long dataStart, long dirOffset, long entryCount) ParseZipEOCD(Stream stream)
     {
         if (!FindEndOfCentralDir(stream))
             throw new ArgumentException("Not a valid .zip file");
@@ -36,7 +36,7 @@ public sealed class ZipFileSystem : BaseFileSystemProvider
         return (dataStart, centralDirPos, entryCount);
     }
 
-    private class ZipVfsFile : VfsFile
+    class ZipVfsFile : VfsFile
     {
         private Func<Stream> getFileStream;
         private long dataOffset = -1;
@@ -54,7 +54,7 @@ public sealed class ZipFileSystem : BaseFileSystemProvider
             this.entryOffset = entryOffset;
         }
 
-        private Stream GetStream()
+        Stream GetStream()
         {
             lock (checkDataLock)
             {
@@ -82,7 +82,7 @@ public sealed class ZipFileSystem : BaseFileSystemProvider
 
         }
 
-        private Stream Decompress(Stream baseStream)
+        Stream Decompress(Stream baseStream)
         {
             baseStream.Seek(dataOffset, SeekOrigin.Begin);
 
@@ -115,8 +115,8 @@ public sealed class ZipFileSystem : BaseFileSystemProvider
 
         stream.Seek(dirOffset, SeekOrigin.Begin);
         var reader = new BinaryReader(stream);
-        List<string[]> directories = [];
-        List<(string Name, long Offset)> files = [];
+        List<string[]> directories = new List<string[]>();
+        List<(string Name, long Offset)> files = new();
         for (var i = 0; i < entryCount; i++)
         {
             var e = reader.ReadStruct<ZipCentralDirectory>();
@@ -137,17 +137,15 @@ public sealed class ZipFileSystem : BaseFileSystemProvider
         foreach (var dir in directories)
         {
             var current = Root;
-            for (int i = 0; i < dir.Length - 1; i++)
-            {
+            for (int i = 0; i < dir.Length - 1; i++) {
                 current = (VfsDirectory)current.Items[dir[i]];
             }
-
             current.Items.Add(dir[^1], new VfsDirectory() { Name = dir[^1], Parent = current });
         }
 
         foreach (var file in files)
         {
-            var dir = (VfsDirectory)GetItem(Path.GetDirectoryName(file.Name)!)!;
+            var dir = (VfsDirectory)GetItem(Path.GetDirectoryName(file.Name));
             var filename = Path.GetFileName(file.Name);
             dir.Items[filename] = new ZipVfsFile(filename, openStream, file.Offset);
         }
@@ -164,7 +162,7 @@ public sealed class ZipFileSystem : BaseFileSystemProvider
         Refresh();
     }
 
-    private static bool FindEndOfCentralDir(Stream stream, bool seek = true)
+    static bool FindEndOfCentralDir(Stream stream, bool seek = true)
     {
         Span<byte> buffer = stackalloc byte[256];
         Span<byte> extra = stackalloc byte[4];

@@ -4,30 +4,44 @@
 
 using System;
 
-namespace LibreLancer.Graphics.Backends.Null;
-
-internal class NullTexture(SurfaceFormat format, int levelCount, int estimatedTextureMemory)
-    : ITexture
+namespace LibreLancer.Graphics.Backends.Null
 {
-    public SurfaceFormat Format { get; protected set; } = format;
+    class NullTexture : ITexture {
 
-    public int EstimatedTextureMemory { get; protected set; } = estimatedTextureMemory;
+        public NullTexture(SurfaceFormat format, int levelCount, int estimatedTextureMemory)
+        {
+            Format = format;
+            LevelCount = levelCount;
+            EstimatedTextureMemory = estimatedTextureMemory;
+        }
 
-    public int LevelCount
-    {
-        get;
-        protected set;
-    } = levelCount;
+        public uint ID;
+        public SurfaceFormat Format { get; protected set; }
 
-    public bool IsDisposed { get; private set; } = false;
+        public int EstimatedTextureMemory { get; protected set; }
+        public int LevelCount
+        {
+            get;
+            protected set;
+        }
+        bool isDisposed = false;
+        public bool IsDisposed
+        {
+            get
+            {
+                return isDisposed;
+            }
+        }
 
-    public void BindTo(int unit)
-    {
-    }
+        public void BindTo(int unit)
+        {
+        }
 
 
-    public virtual void Dispose()
-    {
-        IsDisposed = true;
+        public virtual void Dispose()
+        {
+            isDisposed = true;
+        }
     }
 }
+

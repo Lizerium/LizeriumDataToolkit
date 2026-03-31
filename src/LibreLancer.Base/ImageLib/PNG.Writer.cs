@@ -11,7 +11,7 @@ namespace LibreLancer.ImageLib;
 
 public record PNGAncillaryChunk(string FourCC, byte[] Data);
 
-internal class ZlibCompress : IDisposable
+class ZlibCompress : IDisposable
 {
     private DeflateStream deflate;
     private Stream outputStream;
@@ -65,9 +65,8 @@ internal class ZlibCompress : IDisposable
 }
 public static partial class PNG
 {
-    private const ulong PNG_SIGNATURE = 0xA1A0A0D474E5089;
-
-    private enum ColorType
+    const ulong PNG_SIGNATURE = 0xA1A0A0D474E5089;
+    enum ColorType
     {
         Grayscale = 0,
         Rgb = 2,
@@ -76,13 +75,13 @@ public static partial class PNG
         Rgba = 6
     }
 
-    private static readonly byte[] IEND = {
+    static readonly byte[] IEND = {
         0x00, 0x00, 0x00, 0x00,
         0x49, 0x45, 0x4E, 0x44,
         0xAE, 0x42, 0x60, 0x82
     };
 
-    private static (ColorType, int bytes) Analyze(ReadOnlySpan<Bgra8> data)
+    static (ColorType, int bytes) Analyze(ReadOnlySpan<Bgra8> data)
     {
         var alpha = false;
         var gray = true;
@@ -102,7 +101,7 @@ public static partial class PNG
         return (ColorType.Rgba, 4);
     }
 
-    private static void CopyLine(Span<byte> source, Span<byte> dest, ColorType type, int width)
+    static void CopyLine(Span<byte> source, Span<byte> dest, ColorType type, int width)
     {
         switch (type)
         {
@@ -135,7 +134,7 @@ public static partial class PNG
         }
     }
 
-    private enum FilterType : byte
+    enum FilterType : byte
     {
         None = 0,
         Sub = 1,
@@ -161,7 +160,7 @@ public static partial class PNG
         }
         Bgra8.ConvertFromRgba(buffer); //Reverse the swap, make it Rgba
         var (colorType, bpp) = Analyze(buffer);
-        var data = MemoryMarshal.Cast<Bgra8, byte>(buffer.AsSpan());
+        var data = MemoryMarshal.Cast<Bgra8, byte>(buffer);
 
         using (var writer = new BinaryWriter(output))
         {
@@ -222,7 +221,7 @@ public static partial class PNG
         }
     }
 
-    private struct Chunk: IDisposable
+    struct Chunk: IDisposable
     {
         public BinaryWriter Writer;
         private MemoryStream stream;
@@ -259,7 +258,7 @@ public static partial class PNG
         public void Dispose() => stream.Dispose();
     }
 
-    private static Span<byte> ApplyFilters(Span<byte> prev, Span<byte> curr, int width, int bpp, byte[] buffer, out FilterType filter)
+    static Span<byte> ApplyFilters(Span<byte> prev, Span<byte> curr, int width, int bpp, byte[] buffer, out FilterType filter)
     {
         var stride = width * bpp;
 
@@ -312,7 +311,7 @@ public static partial class PNG
     }
 
 
-    private static byte PaethPredictor(byte a, byte b, byte c)
+    static byte PaethPredictor(byte a, byte b, byte c)
     {
         var pa = Math.Abs(b - c);
         var pb = Math.Abs(a - c);

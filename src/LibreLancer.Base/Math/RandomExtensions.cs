@@ -3,15 +3,16 @@
 // LICENSE, which is part of this source code package
 
 using System;
-
-namespace LibreLancer;
-
-public static class RandomExtensions
+namespace LibreLancer
 {
-    public static float NextFloat(this Random rnd, float min, float max)
-    {
-        return (float)(
-            min + (rnd.NextDouble() * (max - min))
-        );
-    }
+	public static class RandomExtensions
+	{
+		public static float NextFloat(this Random rnd, float min, float max)
+		{
+			return (float)(
+				min + (rnd.NextDouble() * (max - min))
+			);
+		}
+	}
 }
+

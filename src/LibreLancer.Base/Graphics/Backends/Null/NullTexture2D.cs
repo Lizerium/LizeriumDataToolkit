@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace LibreLancer.Graphics.Backends.Null;
 
-internal class NullTexture2D : NullTexture, ITexture2D
+class NullTexture2D : NullTexture, ITexture2D
 {
     public NullTexture2D(int width, int height, bool mipMaps, SurfaceFormat format, int levelCount) : base(format, levelCount, width * height * 4)
     {
