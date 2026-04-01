@@ -1,4 +1,12 @@
-﻿/* SDL2# - C# Wrapper for SDL2
+﻿/*
+ * Author: Nikolay Dvurechensky and Librelancer Contributors
+ * Site: https://dvurechensky.pro/
+ * Gmail: dvurechenskysoft@gmail.com
+ * Last Updated: 01 апреля 2026 22:12:55
+ * Version: 1.0.2419
+ */
+
+/* SDL2# - C# Wrapper for SDL2
  *
  * Copyright (c) 2013-2016 Ethan Lee.
  *

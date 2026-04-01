@@ -1,3 +1,11 @@
+﻿/*
+ * Author: Nikolay Dvurechensky and Librelancer Contributors
+ * Site: https://dvurechensky.pro/
+ * Gmail: dvurechenskysoft@gmail.com
+ * Last Updated: 01 апреля 2026 22:12:55
+ * Version: 1.0.2419
+ */
+
 /*
 DXT1/DXT3/DXT5 texture decompression
 The original code is from Benjamin Dobell, see below for details. Compared to
@@ -23,7 +31,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---
-Copyright (c) 2012 - 2015 Matthäus G. "Anteru" Chajdas (http://anteru.net)
+Copyright (c) 2012 - 2015 MatthГ¤us G. "Anteru" Chajdas (http://anteru.net)
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
 the Software without restriction, including without limitation the rights to

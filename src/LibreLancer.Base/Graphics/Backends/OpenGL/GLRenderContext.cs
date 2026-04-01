@@ -1,3 +1,11 @@
+﻿/*
+ * Author: Nikolay Dvurechensky and Librelancer Contributors
+ * Site: https://dvurechensky.pro/
+ * Gmail: dvurechenskysoft@gmail.com
+ * Last Updated: 01 апреля 2026 22:12:55
+ * Version: 1.0.2419
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -94,7 +102,7 @@ class GLRenderContext : IRenderContext
     static bool CreateContextES(IntPtr sdlWin, out IntPtr ctx)
     {
         //mesa on raspberry pi OS won't give you a 3.1 context if you request it
-        //but it will give you 3.1 if you request 3.0  ¯\_(ツ)_/¯
+        //but it will give you 3.1 if you request 3.0  ВЇ\_(гѓ„)_/ВЇ
         ctx = SDLGL_Create(sdlWin, 3, 0, true);
         if (ctx == IntPtr.Zero) return false;
         if (!GL.CheckStringSDL(true))
