@@ -1,7 +1,7 @@
 <h1 align="center">🌊 Freelancer Data Toolkit 🌊</h1>
 
 <p align="center">
-  <b>Чтение, анализ и сериализация данных игр серии Freelancer</b>
+  <b>Reading, analysis, and serialization of Freelancer game data</b>
 </p>
 
 <p align="center">
@@ -13,78 +13,76 @@
   <img src="https://shields.dvurechensky.pro/badge/Origin-LibreLancer-9C27B0?style=for-the-badge" />
 </p>
 
+<div align="center" style="margin: 20px 0; padding: 10px; background: #1c1917; border-radius: 10px;">
+  <strong>🌐 Language: </strong>
+  
+  <a href="./README.ru.md" style="color: #F5F752; margin: 0 10px;">
+    🇷🇺 Russian
+  </a>
+  | 
+  <span style="color: #0891b2; margin: 0 10px;">
+    ✅ 🇺🇸 English (current)
+  </span>
+</div>
+
 ---
 
 > [!NOTE]
-> Этот проект является частью экосистемы **Lizerium** и относится к направлению:
+> This project is part of the **Lizerium** ecosystem and belongs to the following direction:
 >
-> * [`Lizerium.Tools.Structs`](https://github.com/Lizerium/Lizerium.Tools.Structs)
+> - [`Lizerium.Tools.Structs`](https://github.com/Lizerium/Lizerium.Tools.Structs)
 >
-> Если вы ищете связанные инженерные и вспомогательные инструменты, начните оттуда.
-
-## 📌 О проекте
-
-Этот репозиторий представляет собой **выделенные и доработанные библиотеки** для работы с данными игры _Freelancer_, извлечённые из проекта **LibreLancer** и переработанные в самостоятельный инструмент.
-
-> Проект больше не зависит от LibreLancer и поддерживается отдельно.
-
-- [📌 О проекте](#-о-проекте)
-- [⚠️ Важно](#️-важно)
-- [✨ Что это даёт](#-что-это-даёт)
-- [🚀 Быстрый старт](#-быстрый-старт)
-  - [1) Подключение библиотек](#1-подключение-библиотек)
-- [📖 Пример чтения данных игры](#-пример-чтения-данных-игры)
-  - [💡 Что ты получаешь](#-что-ты-получаешь)
-- [🧊 JSON сериализация](#-json-сериализация)
-- [🔄 JSON десериализация](#-json-десериализация)
-- [🧠 Архитектурная идея](#-архитектурная-идея)
-- [🔥 Особенности](#-особенности)
-- [📦 Где использовать](#-где-использовать)
-- [📂 Скриншот](#-скриншот)
-- [📉 Статус](#-статус)
-- [📜 License \& Origin](#-license--origin)
+> If you are looking for related engineering and supporting tools, start there.
 
 ---
 
-## ⚠️ Важно
+## 📌 About the Project
 
-- Проект не используется в коммерческих целях
-- Исходные компоненты были взяты из открытого проекта LibreLancer
-- Использование в коммерции — на ваш страх и риск
+This repository contains **extracted and enhanced libraries** for working with _Freelancer_ game data, originally taken from the **LibreLancer** project and reworked into a standalone toolkit.
+
+> The project no longer depends on LibreLancer and is maintained independently.
 
 ---
 
-## ✨ Что это даёт
+## ⚠️ Important
 
-С помощью этих библиотек можно:
+- This project is not intended for commercial use
+- Core components were originally sourced from the open-source LibreLancer project
+- Commercial use is at your own risk
 
-- 📂 Читать структуру игры Freelancer целиком
-- 🧠 Загружать все игровые данные в память
-- 🔍 Анализировать конфигурации (`freelancer.ini` и др.)
-- 🔁 Сериализовать состояние игры в JSON
-- 🧩 Работать с модами (поддержка доработана)
-- ⚙️ Строить свои инструменты:
+---
+
+## ✨ What it provides
+
+With these libraries you can:
+
+- 📂 Read the entire structure of a Freelancer game installation
+- 🧠 Load all game data into memory
+- 🔍 Analyze configurations (`freelancer.ini`, etc.)
+- 🔁 Serialize game state into JSON
+- 🧩 Work with mods (extended support included)
+- ⚙️ Build your own tools:
   - Mod Manager
-  - Анализаторы данных
-  - Генераторы конфигов
-  - Тестовые среды
+  - Data analyzers
+  - Config generators
+  - Testing environments
 
 ---
 
-## 🚀 Быстрый старт
+## 🚀 Quick Start
 
-### 1) Подключение библиотек
+### 1) Add libraries
 
-Собери проект и подключи:
+Build the project and reference:
 
 - `Lizerium.Librelancer.DataBridge.dll`
 - `LibreLancer.Base.dll`
 
-(Готовые сборки доступны в разделе `Releases`)
+(Prebuilt binaries are available in the `Releases` section)
 
 ---
 
-## 📖 Пример чтения данных игры
+## 📖 Example: Reading game data
 
 ```csharp
 using LibreLancer.Data;
@@ -95,6 +93,7 @@ var vfs = LibreLancer.Data.IO.FileSystem.FromPath(freelancerPath);
 
 var ini = new FreelancerIni(vfs);
 var data = new FreelancerData(ini, vfs);
+
 data.LoadData((msg) =>
 {
     Console.WriteLine(msg);
@@ -103,14 +102,14 @@ data.LoadData((msg) =>
 Console.ReadLine();
 ```
 
-### 💡 Что ты получаешь
+### 💡 What you get
 
-- `ini` → конфигурация игры (`freelancer.ini`)
-- `data` → **вся игра в памяти** (структуры, параметры, ресурсы)
+- `ini` → game configuration (`freelancer.ini`)
+- `data` → **entire game loaded into memory** (structures, parameters, resources)
 
 ---
 
-## 🧊 JSON сериализация
+## 🧊 JSON Serialization
 
 ```csharp
 var settings = new JsonSerializerSettings
@@ -124,7 +123,7 @@ File.WriteAllText("freelancer_dump.json", json);
 
 ---
 
-## 🔄 JSON десериализация
+## 🔄 JSON Deserialization
 
 ```csharp
 var settings = new JsonSerializerSettings
@@ -138,42 +137,42 @@ var data = JsonConvert.DeserializeObject<FreelancerData>(json, settings);
 
 ---
 
-## 🧠 Архитектурная идея
+## 🧠 Architectural Idea
 
-Инструмент работает как:
+The toolkit operates as:
 
 ```
 Freelancer Folder → VFS → INI → Data Model → JSON / Runtime
 ```
 
-- Виртуальная файловая система (VFS)
-- Парсинг конфигураций
-- Построение полной модели игры
-- Дальнейшая обработка
+- Virtual File System (VFS)
+- Configuration parsing
+- Full game model construction
+- Further processing
 
 ---
 
-## 🔥 Особенности
+## 🔥 Features
 
-- Поддержка модифицированных версий игры
-- Расширенная загрузка данных
-- Возможность полного snapshot'а состояния игры
-- Минимальный вход — буквально **3 строки кода**
-
----
-
-## 📦 Где использовать
-
-Этот проект особенно полезен если ты:
-
-- разрабатываешь моды для Freelancer
-- делаешь инструменты анализа
-- пишешь серверную логику (FLHook / кастомные сервера)
-- хочешь автоматизировать работу с ресурсами игры
+- Support for modded game versions
+- Extended data loading
+- Ability to create full game state snapshots
+- Minimal entry point — literally **3 lines of code**
 
 ---
 
-## 📂 Скриншот
+## 📦 Use Cases
+
+This project is especially useful if you:
+
+- develop Freelancer mods
+- build analysis tools
+- write server-side logic (FLHook / custom servers)
+- want to automate working with game resources
+
+---
+
+## 📂 Screenshot
 
 <p align="center">
   <img src="media/devenv_1rKJMAqvRr.png" />
@@ -181,9 +180,9 @@ Freelancer Folder → VFS → INI → Data Model → JSON / Runtime
 
 ---
 
-## 📉 Статус
+## 📉 Status
 
-Проект активно используется как **внутренний инструмент**, но может дорабатываться дальше.
+The project is actively used as an **internal tool**, but may continue evolving.
 
 ---
 
@@ -193,8 +192,8 @@ This project is based in part on code originally derived from the
 [LibreLancer](https://github.com/Librelancer/Librelancer) project,
 which is distributed under the [**MIT License**](LICENSE)
 
-This repository contains extracted, adapted and modified components used
-for reading, parsing and serializing Freelancer game data in a standalone form.
+This repository contains extracted, adapted, and modified components used
+for reading, parsing, and serializing Freelancer game data in a standalone form.
 
 Original copyright belongs to:
 
