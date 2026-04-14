@@ -1,9 +1,8 @@
-[TOC]
 # Model Importer
 
 The LancerEdit model importer supports creating both .cmp and .3db files (corresponding to multi-part and single-part models) from common model interchange formats. It will also create .sur collision hitbox files when applicable. The model importer may be accessed by going to **Tools -> Import Model**.
 
-![Menu Option](assets/modelimport-menu.png) 
+![Menu Option](assets/modelimport-menu.png)
 
 ## Supported Formats
 
@@ -43,17 +42,17 @@ Fixed hardpoints have the custom property `hptype` with value `"fix"`.
 
 Revolute hardpoints have their `hptype` property set to `"rev"`, and also contain the following properties:
 
-| Name | Value |
-|-|-|
-| min | Minimum angle in degrees (e.g. -45) |
-| max | Maximum angle in degrees (e.g. 45) |
-| axis | Array of 3 floats describing the axis of rotation (e.g. [0, 1, 0]). <br><br> *Note: This property is always in Y-Up space. Blender and other modelling packages do not work in Y-Up coordinates* |
+| Name | Value                                                                                                                                                                                            |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| min  | Minimum angle in degrees (e.g. -45)                                                                                                                                                              |
+| max  | Maximum angle in degrees (e.g. 45)                                                                                                                                                               |
+| axis | Array of 3 floats describing the axis of rotation (e.g. [0, 1, 0]). <br><br> _Note: This property is always in Y-Up space. Blender and other modelling packages do not work in Y-Up coordinates_ |
 
 ### Collision Hulls
 
 Collision hulls are stored as direct children of their parent, and have names ending with the text `$hull`. These meshes **must** be convex and have an even number of faces, or they will not create a usable .sur file.
 
-Ship shield collision hulls are handled via a convext mesh attached to root named `HpMount$hull`. Equipment override hulls, which will replace any attached equipment hitboxes, are handled in a similar way, with a convex mesh named to match the hardpoint attached to the same parent part. i.e. an override hull for `HpWeapon01`  would be named `HpWeapon01$hull`.
+Ship shield collision hulls are handled via a convext mesh attached to root named `HpMount$hull`. Equipment override hulls, which will replace any attached equipment hitboxes, are handled in a similar way, with a convex mesh named to match the hardpoint attached to the same parent part. i.e. an override hull for `HpWeapon01` would be named `HpWeapon01$hull`.
 
 ### LODs
 
@@ -77,7 +76,3 @@ LOD meshes can be stored anywhere in the file, and are named `part name` plus e.
 ![Material Names](assets/modelimport-materials.png)
 
 Referenced materials are listed in this tab, and the names of them can be edited here before saving the model file. This is useful if you wish to reference specific materials in an external .mat, or if you want to rename materials in your model to avoid name collisions once you've exported it.
-
-
-
-
