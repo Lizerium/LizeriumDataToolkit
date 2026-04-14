@@ -12,7 +12,6 @@ Scripts may be run in one of two ways.
 
 Simply run `lleditscript script.cs-script [arguments]` to use the command line runner for Librelancer scripts.
 
-
 ## Scripts menu of LancerEdit
 
 Scripts accessible in the `Scripts` menu of LancerEdit must be placed in an `editorscripts` folder next to the LancerEdit binary
@@ -49,4 +48,4 @@ Valid types for arguments include: `string`, `integer`, `boolean`, `dropdown`, `
 
 Please see the built-in script files in `lib/editorscripts/` as working examples.
 
-See the [API Reference](api/reference.md) for further details.
+See the [API Reference](api/script-helpers.md) for further details.

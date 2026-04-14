@@ -1,23 +1,33 @@
-XUTF
-All values are little endian
+# XUTF
 
-HEADER (17 bytes)
-=====
+All values are stored in **little endian** format
 
+---
+
+## HEADER (17 bytes)
+
+```
 fourCC signature = "XUTF"
 byte version = 1
 uint32 string block length
 uint32 node block length
 uint32 data block length
+```
 
-VARINT ENCODING
-=====
-To enable a unique bit pattern for each integer,
-each new byte in the variable int encoding represents
-the previous minimum value + the new bit encoding
+---
 
-Example Encode:
+## VARINT ENCODING
 
+To ensure a unique bit pattern for each integer,
+each new byte in the varint encoding represents:
+
+> the previous minimum value + the new bit encoding
+
+---
+
+### Encoding example:
+
+```csharp
 if (u <= 127)
 {
     PutByte((byte) u);
@@ -52,13 +62,18 @@ else
     PutByte((byte) (((u >> 21) & 0x7f) | 0x80));
     PutByte((byte) ((u >> 28) & 0x7f));
 }
+```
 
-Example Decode:
+---
 
+### Decoding example:
+
+```csharp
 int b = GetByte();
 uint a = (uint) (b & 0x7f);
 int extraCount = 0;
-//first extra
+
+// first extra byte
 if ((b & 0x80) == 0x80)
 {
     b = GetByte();
@@ -66,7 +81,7 @@ if ((b & 0x80) == 0x80)
     extraCount++;
 }
 
-//second extra
+// second
 if ((b & 0x80) == 0x80)
 {
     b = GetByte();
@@ -74,7 +89,7 @@ if ((b & 0x80) == 0x80)
     extraCount++;
 }
 
-//third extra
+// third
 if ((b & 0x80) == 0x80)
 {
     b = GetByte();
@@ -82,7 +97,7 @@ if ((b & 0x80) == 0x80)
     extraCount++;
 }
 
-//fourth extra
+// fourth
 if ((b & 0x80) == 0x80)
 {
     b = GetByte();
@@ -106,36 +121,49 @@ switch (extraCount)
         break;
 }
 return a;
+```
 
+---
 
+## STRING BLOCK
 
+Located immediately after the header.
 
-STRING BLOCK
-======
+A block of UTF-8 strings with length prefixes (in bytes).
+The entire block is compressed.
 
-Immediately after header. 
-Block of length-prefixed (in bytes) UTF8 strings
-Whole block compressed using 
-
+```
 ushort length
 byte[length] utf8data
+```
 
-NODE BLOCK
-=====
+---
 
-varint nameOffset - refers to the start of a string in the string block
-byte type - 0 for file, 1 for directory
+## NODE BLOCK
 
-type 0:
-varint data offset - from start of data block
+```
+varint nameOffset — points to the start of a string in the string block
+byte type — 0 for file, 1 for directory
+```
+
+### type 0 (file):
+
+```
+varint data offset — from the start of the data block
 varint data length
+```
 
-type 1:
+### type 1 (directory):
+
+```
 varint node count
 node[node count] children
+```
 
-DATA BLOCK
-=====
+---
 
-Immediately after node block
-Binary blob
+## DATA BLOCK
+
+Located immediately after the node block.
+
+Represents a binary blob.

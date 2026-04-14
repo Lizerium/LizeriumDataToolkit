@@ -28,8 +28,13 @@ Welcome to the documentation for LancerEdit $(VERSION).
 ### Scripting
 
 - [Librelancer Scripts](scripts.md)
-- [Script API Reference](api/reference.md)
+- [Script API Reference](api/script-helpers.md)
+- [XUTF](XUTF_Spec.md)
 
 ### Troubleshooting
 
 - [Locating Log Files](logfiles.md)
+
+### Nuget Packet
+
+- [Nuget](nuget.md)

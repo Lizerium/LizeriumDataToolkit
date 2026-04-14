@@ -1,8 +1,8 @@
 <p align="center">
-  <b>Reading, analyzing and serializing data from Freelancer games</b>
+  <b>Чтение, анализ и сериализация данных игр серии Freelancer</b>
 </p>
 
-## 📖 Example of reading game data
+## 📖 Пример чтения данных игры
 
 ```csharp
 using LibreLancer.Data;
@@ -21,12 +21,12 @@ data.LoadData((msg) =>
 Console.ReadLine();
 ```
 
-### 💡 What you get
+### 💡 Что ты получаешь
 
-- `ini` → game configuration (`freelancer.ini`)
-- `data` → **the entire game loaded in memory** (structures, parameters, resources)
+- `ini` → конфигурация игры (`freelancer.ini`)
+- `data` → **вся игра в памяти** (структуры, параметры, ресурсы)
 
-## 🧊 JSON serialization
+## 🧊 JSON сериализация
 
 ```csharp
 var settings = new JsonSerializerSettings
@@ -40,7 +40,7 @@ File.WriteAllText("freelancer_dump.json", json);
 
 ---
 
-## 🔄 JSON deserialization
+## 🔄 JSON десериализация
 
 ```csharp
 var settings = new JsonSerializerSettings

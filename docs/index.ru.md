@@ -28,8 +28,13 @@
 ### Скриптинг
 
 - [Скрипты Librelancer](scripts.ru.md)
-- [Справочник API скриптов](api/reference.ru.md)
+- [Справочник API скриптов](api/script-helpers.ru.md)
+- [XUTF](XUTF_Spec.ru.md)
 
 ### Устранение неполадок
 
 - [Поиск файлов журналов](logfiles.ru.md)
+
+### Nuget пакет
+
+- [Nuget](nuget.ru.md)
