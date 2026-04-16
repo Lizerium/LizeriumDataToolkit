@@ -42,6 +42,14 @@ This repository contains **extracted and enhanced libraries** for working with _
 
 > The project no longer depends on LibreLancer and is maintained independently.
 
+## Credits
+
+> [!NOTE]
+> This project is based on work from the Freelancer community.
+> Reworked and integrated into Lizerium ecosystem.
+>
+> Contributors: [`CallumDev`](https://github.com/CallumDev), [`Lazrius`](https://github.com/Lazrius), [`smegulater`](https://github.com/smegulater), [`josbyte`](https://github.com/josbyte), [`mcgoober`](https://github.com/mcgoober), [`IrateRedKite`](https://github.com/IrateRedKite), [`bjstarosta`](https://github.com/bjstarosta), [`gp-alex`](https://github.com/gp-alex), [`JimJamJamie`](https://github.com/JimJamJamie), [`BC46`](https://github.com/BC46), [`Gnamra`](https://github.com/Gnamra), [`mrmbernardi`](https://github.com/mrmbernardi), [`HaydnTrigg`](https://github.com/HaydnTrigg), [`ananace`](https://github.com/ananace)
+
 ---
 
 ## ⚠️ Important

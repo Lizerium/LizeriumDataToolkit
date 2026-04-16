@@ -40,7 +40,16 @@
 
 > Проект больше не зависит от LibreLancer и поддерживается отдельно.
 
+## ⚠️ Признательность
+
+> [!NOTE]
+> Этот проект основан на работе сообщества фрилансеров.
+> Переработан и интегрирован в экосистему Lizerium.
+>
+> Авторы: [`CallumDev`](https://github.com/CallumDev), [`Lazrius`](https://github.com/Lazrius), [`smegulater`](https://github.com/smegulater), [`josbyte`](https://github.com/josbyte), [`mcgoober`](https://github.com/mcgoober), [`IrateRedKite`](https://github.com/IrateRedKite), [`bjstarosta`](https://github.com/bjstarosta), [`gp-alex`](https://github.com/gp-alex), [`JimJamJamie`](https://github.com/JimJamJamie), [`BC46`](https://github.com/BC46), [`Gnamra`](https://github.com/Gnamra), [`mrmbernardi`](https://github.com/mrmbernardi), [`HaydnTrigg`](https://github.com/HaydnTrigg), [`ananace`](https://github.com/ananace)
+
 - [📌 О проекте](#-о-проекте)
+- [⚠️ Признательность](#️-признательность)
 - [⚠️ Важно](#️-важно)
 - [✨ Что это даёт](#-что-это-даёт)
 - [🚀 Быстрый старт](#-быстрый-старт)
