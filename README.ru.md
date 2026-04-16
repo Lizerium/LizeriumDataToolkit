@@ -11,6 +11,7 @@
   <img src="https://shields.dvurechensky.pro/badge/Freelancer-SDK-0A0A0A?style=for-the-badge" />
   <img src="https://shields.dvurechensky.pro/badge/JSON-Serialization-FF6F00?style=for-the-badge&logo=json&logoColor=white" />
   <img src="https://shields.dvurechensky.pro/badge/Origin-LibreLancer-9C27B0?style=for-the-badge" />
+  <img src="https://shields.dvurechensky.pro/nuget/v/Lizerium.Librelancer.DataBridge" />
 </p>
 
 <div align="center" style="margin: 20px 0; padding: 10px; background: #1c1917; border-radius: 10px;">
