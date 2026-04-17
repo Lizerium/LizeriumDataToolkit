@@ -16,10 +16,18 @@ var vfs = LibreLancer.Data.IO.FileSystem.FromPath(freelancerPath);
 
 var ini = new FreelancerIni(vfs);
 var data = new FreelancerData(ini, vfs);
-data.LoadData((msg) =>
+
+try
 {
-    Console.WriteLine(msg);
-});
+    data.LoadData((msg) =>
+    {
+        Console.WriteLine(msg);
+    });
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.Message);
+}
 
 Console.ReadLine();
 

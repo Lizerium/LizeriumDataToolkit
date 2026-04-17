@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LibreLancer.Data\Lizerium.Librelancer.DataBridge.csproj" />
+    <PackageReference Include="Lizerium.Librelancer.DataBridge" Version="1.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 </Project>

@@ -26,7 +26,7 @@ public partial class StorylineIni
     public void AddDefault()
     {
         using (var stream = typeof(StorylineIni).Assembly.GetManifestResourceStream(
-                   "LibreLancer.Data.Storyline.Storyline.default.ini"))
+                   "Lizerium.Librelancer.DataBridge.Storyline.Storyline.default.ini"))
         {
             ParseIni(stream, "DefaultStoryline");
         }
