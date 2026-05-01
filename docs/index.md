@@ -39,4 +39,4 @@ Welcome to the documentation for LancerEdit $(VERSION).
 
 - [Nuget](nuget.md)
 
-<script src="/assets/tracker.js"></script>
+<script src="/LizeriumDataToolkit/assets/tracker.js"></script>
