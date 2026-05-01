@@ -17,26 +17,51 @@
     </head>
     <body>
     <div><a href="index.html">« Home</a></div>
-<div id="site-search">
-  <h1> Search</h1>
-  <div class="search-flex">
-    <form id="search-form" name="searchForm" role="form" onsubmit="return false">
-      <div class="search-wrapper">
-        <div class="search-container">
-          <img class="fa-search" src="assets/search.svg"></img>
-          <input autocomplete="off" placeholder="" id="search" class="search-input" aria-label="Search site" type="text" name="q">
-        </div>
-        <div class="search-error hide-element"><span class="search-error-message"></span></div>
+    <div id="site-search">
+      <h1> Search</h1>
+      <div class="search-flex">
+        <form id="search-form" name="searchForm" role="form" onsubmit="return false">
+          <div class="search-wrapper">
+            <div class="search-container">
+              <img class="fa-search" src="assets/search.svg"></img>
+              <input autocomplete="off" placeholder="" id="search" class="search-input" aria-label="Search site" type="text" name="q">
+            </div>
+            <div class="search-error hide-element"><span class="search-error-message"></span></div>
+          </div>
+        </form>
+        <section class="search-results hide-element">
+            <div id="search-header">
+                <div class="search-query search-query-left">search term: <span id="query"></span></div>
+                <div class="search-query search-query-right"><span id="results-count"></span><span id="results-count-text"></span></div>
+            </div>
+            <ul></ul>
+        </section>
       </div>
-    </form>
-    <section class="search-results hide-element">
-        <div id="search-header">
-            <div class="search-query search-query-left">search term: <span id="query"></span></div>
-            <div class="search-query search-query-right"><span id="results-count"></span><span id="results-count-text"></span></div>
-        </div>
-        <ul></ul>
-    </section>
-  </div>
-</div>
+    </div>
+    <script>
+      ;(function () {
+        fetch('https://license.dvurechensky.pro/api/v1/log', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            site: location.hostname,
+            path: location.pathname,
+            event_type: 'pageview',
+            referrer: document.referrer || '',
+            utm_source:
+              new URLSearchParams(location.search).get('utm_source') || '',
+            utm_medium:
+              new URLSearchParams(location.search).get('utm_medium') || '',
+            utm_campaign:
+              new URLSearchParams(location.search).get('utm_campaign') || '',
+            title: document.title || '',
+            language: navigator.language || '',
+            viewport: window.innerWidth + 'x' + window.innerHeight,
+          }),
+        }).catch(function () {})
+      })()
+    </script>
     </body>
 </html>
