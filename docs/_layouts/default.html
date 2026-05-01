@@ -1,7 +1,31 @@
 <!doctype html>
-<html>
+<html lang="en">
 	<head>
-		{{ content }}
-		<script src="/LizeriumDataToolkit/assets/tracker.js"></script>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<title>{{ page.title | default: site.title }}</title>
+
+		<link rel="stylesheet" href="{{ '/assets/reset.css' | relative_url }}" />
+		<link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}" />
+		<link
+			rel="stylesheet"
+			href="{{ '/assets/open-sans.css' | relative_url }}"
+		/>
+		<link rel="stylesheet" href="{{ '/assets/code.css' | relative_url }}" />
+		<link
+			rel="stylesheet"
+			href="{{ '/assets/source-code-pro.css' | relative_url }}"
+		/>
+		<link rel="stylesheet" href="{{ '/assets/search.css' | relative_url }}" />
+
+		<!-- JS -->
+		<script src="{{ '/assets/lunr.js' | relative_url }}"></script>
 	</head>
+
+	<body>
+		{{ content }}
+		<script src="{{ '/assets/search.js' | relative_url }}"></script>
+		<script src="{{ '/assets/tracker.js' | relative_url }}"></script>
+	</body>
 </html>
