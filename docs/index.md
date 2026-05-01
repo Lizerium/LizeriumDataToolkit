@@ -38,3 +38,5 @@ Welcome to the documentation for LancerEdit $(VERSION).
 ### Nuget Packet
 
 - [Nuget](nuget.md)
+
+<script src="/assets/tracker.js"></script>
