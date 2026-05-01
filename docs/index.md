@@ -38,5 +38,3 @@ Welcome to the documentation for LancerEdit $(VERSION).
 ### Nuget Packet
 
 - [Nuget](nuget.md)
-
-<script src="/LizeriumDataToolkit/assets/tracker.js"></script>
