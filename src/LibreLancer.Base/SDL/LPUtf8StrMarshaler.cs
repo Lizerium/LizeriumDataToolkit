@@ -2,8 +2,8 @@
  * Author: Nikolay Dvurechensky and Librelancer Contributors
  * Site: https://dvurechensky.pro/
  * Gmail: dvurechenskysoft@gmail.com
- * Last Updated: 10 июля 2026 11:55:37
- * Version: 1.0.2532
+ * Last Updated: 11 июля 2026 14:01:51
+ * Version: 1.0.2533
  */
 
 /* SDL2# - C# Wrapper for SDL2
