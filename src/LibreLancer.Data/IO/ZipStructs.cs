@@ -2,8 +2,8 @@
  * Author: Nikolay Dvurechensky and Librelancer Contributors
  * Site: https://dvurechensky.pro/
  * Gmail: dvurechenskysoft@gmail.com
- * Last Updated: 15 июля 2026 11:55:04
- * Version: 1.0.2537
+ * Last Updated: 16 июля 2026 14:14:29
+ * Version: 1.0.2538
  */
 
 using System.Runtime.InteropServices;
