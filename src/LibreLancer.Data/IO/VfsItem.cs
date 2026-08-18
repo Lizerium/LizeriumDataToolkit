@@ -2,8 +2,8 @@
  * Author: Nikolay Dvurechensky and Librelancer Contributors
  * Site: https://dvurechensky.pro/
  * Gmail: dvurechenskysoft@gmail.com
- * Last Updated: 17 августа 2026 06:53:04
- * Version: 1.0.2570
+ * Last Updated: 18 августа 2026 06:53:24
+ * Version: 1.0.2571
  */
 
 namespace LibreLancer.Data.IO;
